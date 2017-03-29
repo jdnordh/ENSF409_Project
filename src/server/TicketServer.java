@@ -2,7 +2,6 @@ package server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -19,7 +18,7 @@ public class TicketServer {
 	
 	private boolean running;
 	
-	private QuitThread quit;
+	private CommandThread command;
 	
 	private LinkedList<TicketThread> Threads;
 	/** Construct a server */
@@ -33,8 +32,8 @@ public class TicketServer {
 			connections = 0;
 			running = true;
 			
-			quit = new QuitThread();
-			quit.start();
+			command = new CommandThread();
+			command.start();
 		} catch (IOException e){
 			System.out.println("Server error: " + e.getMessage());
 		}

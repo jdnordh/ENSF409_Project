@@ -3,7 +3,7 @@ package server;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-public class QuitThread extends Thread{
+public class CommandThread extends Thread{
 	
 	public void run(){
 		try {
