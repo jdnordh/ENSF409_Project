@@ -51,9 +51,11 @@ public class Database {
 			while (result.next()){
 				String f = "";
 				for (int i = 1; i < 10; i++){
-					f += (result.getString(i) + ",");
+					f += (result.getString(i));
+					if (i < 9) f += ",";
 				}
-				res[j] = new Flight(f);
+				System.out.println(f);
+				res[j++] = new Flight(f);
 			}
 			
 		} catch (SQLException e) {
@@ -96,7 +98,9 @@ public class Database {
 	public static void main(String [] args){
 		Database d = new Database();
 		//d.test();
-		d.browse();
-		
+		Flight [] f = d.browse();
+		for (int i = 0; i < f.length; i++){
+			System.out.println(f[i].getSource());
+		}
 	}
 }
