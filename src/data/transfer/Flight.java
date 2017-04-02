@@ -1,7 +1,5 @@
 package data.transfer;
 
-import server.Database;
-
 public class Flight {
 	private int id;
 	private String source;
@@ -70,8 +68,12 @@ public class Flight {
 		}
 		setPrice(Double.parseDouble(temp));
 	}
-	public static void main(String [] args){
-		Flight  f = new Flight("787264,Mobile,Paterson,17:43,1:26,April 7,157,157,353");
+	
+	/**
+	 * Decrease the available seats on a flight by one
+	 */
+	public void seatDecrement(){
+		this.availableSeats--;
 	}
 	
 	// Get and Set

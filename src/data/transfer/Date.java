@@ -25,27 +25,37 @@ public class Date {
 	/** Construct a date from a string, default year is 2017 
 	 * Uses the form : "October 8" */
 	public Date(String d){
-		boolean space = false;
+		int spaces = 0;
 		String temp = "";
 		for (int i = 0; i < d.length(); i ++){
-			if (space){
-				temp += Character.toString(d.charAt(i));
-			}
-			else {
-				if (d.charAt(i) == ' ') {
-					space = true;
-					month = getMonth(temp);
+			if (d.charAt(i) == ' ') {
+				switch (spaces){
+				case 0:{	// ID
+					month = getMonthP(temp);
 					temp = "";
+					break;
 				}
-				else temp += Character.toString(d.charAt(i));
+				case 1:{	// Source
+					day = Integer.parseInt(temp);
+					temp = "";
+					break;
+				}
+				}
+				spaces++;
 			}
+			else temp += Character.toString(d.charAt(i));
 		}
-		day = Integer.parseInt(temp);
-		year = 2017;
+		if (spaces == 1) {
+			day = Integer.parseInt(temp);
+			year = 2017;
+		}
+		else {
+			year = Integer.parseInt(temp);
+		}
 	}
 	
 	/** get which month a string is */
-	private int getMonth(String m){
+	private int getMonthP(String m){
 		if (m.equalsIgnoreCase("january")) return 1;
 		if (m.equalsIgnoreCase("february")) return 2;
 		if (m.equalsIgnoreCase("march")) return 3;
@@ -78,8 +88,37 @@ public class Date {
 		else if (month == 12) temp += "December";
 		temp += " ";
 		temp += Integer.toString(day);
-		temp += ", ";
+		temp += " ";
 		temp += Integer.toString(year);
 		return temp;
+	}
+	
+	/** Returns true if the two dates are equal */
+	public boolean equals(Date d){
+		if (this == d) return true;
+		if (!(day == d.getDay())) return false;
+		if (!(month == d.getMonth())) return false;
+		if (!(year == d.getYear())) return false;
+		return true;
+	}
+	
+	// Set and get
+	public int getDay(){
+		return day;
+	}
+	public void setDay(int d){
+		day = d;
+	}
+	public int getMonth(){
+		return month;
+	}
+	public void setMonth(int m){
+		month = m;
+	}
+	public int getYear(){
+		return year;
+	}
+	public void setYear(int y){
+		year = y;
 	}
 }
