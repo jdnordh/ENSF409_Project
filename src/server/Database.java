@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.time.LocalDateTime;
 import java.text.DecimalFormat;
 
 import com.mysql.jdbc.Connection;
@@ -23,6 +24,7 @@ public class Database {
 	private Connection connection;
 	private Statement statement;
 	
+	private int Table_Tickets;
 	/**
 	 * Construct a new medium that connects to the database
 	 */
@@ -30,6 +32,8 @@ public class Database {
 		try {
 			connection = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/ensf409_project", "client", "This is a client!");
 			statement = (Statement) connection.createStatement();
+			ResultSet result = statement.executeQuery("select count(*) from tickets");
+			while (result.next()) Table_Tickets = result.getInt(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -177,8 +181,9 @@ public class Database {
 			if (user.isAdmin()){
 				while (result.next()){
 					String temp = "";
-					for (int i = 1; i < 6; i++){
+					for (int i = 1; i < 12; i++){
 						temp += result.getString(i);
+						if (i < 11) temp += ",";
 					}
 					res.add(new Ticket(temp));
 				}
@@ -186,9 +191,9 @@ public class Database {
 			else {
 				while (result.next()){
 					String f = "";
-					for (int i = 1; i < 6; i++){
+					for (int i = 1; i < 12; i++){
 						f += (result.getString(i));
-						if (i < 5) f += ",";
+						if (i < 11) f += ",";
 					}
 					res.add(new Ticket(f));
 				}
@@ -224,10 +229,8 @@ public class Database {
 				String query = "INSERT tickets VALUES(?,?,?,?,?,?)";
 				PreparedStatement state = connection.clientPrepareStatement(query);
 				String temp = "";
-				temp += Integer.toString(flight.getId());
-				DecimalFormat f = new DecimalFormat("000");
-				temp += f.format(flight.getavailableSeats() - flight.getTotalSeats());
-				
+				DecimalFormat f = new DecimalFormat("000000");
+				temp += f.format(Table_Tickets++);
 				state.setString(1, temp);
 				state.setString(2, Integer.toString(flight.getId()));
 				state.setString(3, user.getFirstName());
@@ -258,6 +261,23 @@ public class Database {
 	 */
 	public boolean addFlight(User user, Flight flight){
 		if (!user.isAdmin()) return false;
+		// check if the flight time is a future value
+		LocalDateTime now = LocalDateTime.now();
+		Date date = flight.getDate();
+		if (date.getYear() < now.getYear()) return false;
+		if (date.getYear() == now.getYear()){
+			if (date.getMonth() < now.getMonthValue()) return false;
+			if (date.getMonth() == now.getMonthValue()){
+				if (date.getDay() < now.getDayOfMonth()) return false;
+				if (date.getDay() == now.getDayOfMonth()){
+					if (flight.getDepartureTime().getHours() < now.getHour()) return false;
+					if (flight.getDepartureTime().getHours() == now.getHour()){
+						if (flight.getDepartureTime().getMinutes() < now.getMinute()) return false;
+					}
+				}
+			}
+		}
+		
 		try{
 			String query = "INSERT flights VALUES(?,?,?,?,?,?,?,?,?)";
 			PreparedStatement state = connection.clientPrepareStatement(query);
@@ -308,6 +328,19 @@ public class Database {
 	}
 	
 	/**
+	 * Add multiple flights via a vector of flights
+	 * @param user User
+	 * @param flights Vector of flights
+	 * @return
+	 */
+	public boolean addMultipleFlights(User user, Vector<Flight> flights){
+		for (int i = 0; i < flights.size(); i++){
+			this.addFlight(user, flights.get(i));
+		}
+		return true;
+	}
+	
+	/**
 	 * Admin tool: Remove given ticket
 	 * @param user User
 	 * @param ticket ticket
@@ -315,12 +348,13 @@ public class Database {
 	 */
 	public boolean removeTicket(User user, Ticket ticket){
 		if (!user.isAdmin()) return false;
+		//TODO fix this
 		try{
 			Statement s = (Statement) connection.createStatement();
 			String id = Integer.toString(ticket.getId());
-			System.out.println(id);
 			String sql = "DELETE FROM tickets WHERE id = '" + id + "'";
 			int delete = s.executeUpdate(sql);
+			updateSeats(ticket.getFlightId(), -1);
 			if(delete == 1){
 				return true;
 			}
@@ -330,6 +364,29 @@ public class Database {
 		} catch (SQLException e){
 			e.printStackTrace();
 			return false;
+		}
+	}
+	
+	/**
+	 * Update the amount of seats on a flight by x
+	 * @param x 
+	 */
+	private void updateSeats(int flightID, int x){
+		try {
+			
+			ResultSet result = statement.executeQuery("select seatsleft from flights where id = '" + Integer.toString(flightID) + "'");
+			int seats = 0;
+			while (result.next()) seats = result.getInt(1);
+			
+			seats += x;
+			
+			String query = "UPDATE flights SET seatsleft = ? WHERE id = ?";
+			PreparedStatement state = connection.clientPrepareStatement(query);
+			state.setString(1, Integer.toString(seats));
+			state.setString(2, Integer.toString(flightID));
+			state.executeUpdate();
+		} catch (SQLException e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -360,8 +417,10 @@ public class Database {
 		User user = new User("Bob", "Sagit", new Date(1, 1, 2017));
 		user.setAdmin(true);
 		
-		//d.bookTicket(user, new Flight("100100,Calgary,Edmonton,13:38,0:33,August 31 2017,123,123,145"), 3);
-		if (d.removeFlight(user, new Flight("100100,Calgary,Edmonton,13:38,0:33,August 31 2017,123,123,145"))) System.out.println("Done");;
+		//d.bookTicket(user, new Flight("770168,Amarillo,Port St. Lucie,7:27,4:27,July 21,165,165,597"), 2);
+		//if (d.removeTicket(user, new Flight("100100,Calgary,Edmonton,13:38,0:33,August 31 2017,123,123,145"))) System.out.println("Done");
+		Ticket bob = new Ticket("00000,770168,Bob,Sagit,January 1 2017,597");
+		d.removeTicket(user, bob);
 		//d.test();
 		//Flight [] f = d.browse();
 	}

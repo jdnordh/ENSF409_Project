@@ -76,6 +76,12 @@ public class Flight {
 		this.availableSeats--;
 	}
 	
+	/**
+	 * Increase the available seats on a flight by one
+	 */
+	public void seatIncrement(){
+		this.availableSeats++;
+	}
 	// Get and Set
 	public int getId() {
 		return id;

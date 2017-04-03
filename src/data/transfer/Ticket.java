@@ -2,9 +2,15 @@ package data.transfer;
 
 public class Ticket {
 	private int id;
-	private Flight flight;
-	private User user;
+	private int flightId;
+	private String source;
+	private String destination;
+	private TimeStamp departureTime;
+	private TimeStamp duration;
+	private Date date;
 	private double price;
+	
+	private User user;
 	
 	/**
 	 * Create a ticket from a user and a flight
@@ -13,12 +19,19 @@ public class Ticket {
 	 */
 	public Ticket(User u, Flight f){
 		user = u;
-		flight = f;
+		
+		flightId = f.getId();
+		source = new String(f.getSource());
+		destination = new String(f.getDestination());
+		departureTime = new TimeStamp(f.getDepartureTime());
+		duration = new TimeStamp(f.getDuration());
+		date = new Date(f.getDate());
 		price = f.getPrice();
 	}
 	
 	/**
-	 * Construct a new ticket with a string of the form: "012345,John,Smith,October 8 1990,350"
+	 * Construct a new ticket with a string of the form:
+	 * ID,Flight ID, Source, Destination, Departure Time, Duration, Date, First name, Last name, Birthday, Price
 	 * @param f
 	 */
 	public Ticket(String f){
@@ -33,17 +46,47 @@ public class Ticket {
 					temp = "";
 					break;
 				}
-				case 1:{	// Source
+				case 1:{	// flight id
+					flightId = Integer.parseInt(temp);
+					temp = "";
+					break;
+				}
+				case 2:{	// Source
+					setSource(new String(temp));
+					temp = "";
+					break;
+				}
+				case 3:{	// Destination
+					setDestination(new String(temp));
+					temp = "";
+					break;
+				}
+				case 4:{	// Departure time
+					setDepartureTime(new TimeStamp(temp));
+					temp = "";
+					break;
+				}
+				case 5:{	// Duration
+					setDuration(new TimeStamp(temp));
+					temp = "";
+					break;
+				}
+				case 6:{	// Date
+					setDate(new Date(temp));
+					temp = "";
+					break;
+				}
+				case 7:{	// First name
 					user.setFirstName(new String(temp));
 					temp = "";
 					break;
 				}
-				case 2:{	// Destination
+				case 8:{	// Last name
 					user.setLastName(new String(temp));
 					temp = "";
 					break;
 				}
-				case 3:{	// Departure time
+				case 9:{	// Birthday
 					user.setBirthday(new Date(temp));
 					temp = "";
 					break;
@@ -62,14 +105,8 @@ public class Ticket {
 	public int getId() {
 		return id;
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public Flight getFlight() {
-		return flight;
-	}
-	public void setFlight(Flight flight) {
-		this.flight = flight;
+	public void setId(int l) {
+		this.id = l;
 	}
 	public double getPrice() {
 		return price;
@@ -82,5 +119,53 @@ public class Ticket {
 	}
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public int getFlightId() {
+		return flightId;
+	}
+
+	public void setFlightId(int flightId) {
+		this.flightId = flightId;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getDestination() {
+		return destination;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+
+	public TimeStamp getDepartureTime() {
+		return departureTime;
+	}
+
+	public void setDepartureTime(TimeStamp departureTime) {
+		this.departureTime = departureTime;
+	}
+
+	public TimeStamp getDuration() {
+		return duration;
+	}
+	
+	public void setDuration(TimeStamp duration) {
+		this.duration = duration;
+	}
+	
+	public Date getDate() {
+		return date;
+	}
+	
+	public void setDate(Date date) {
+		this.date = date;
 	}
 }

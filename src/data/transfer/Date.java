@@ -22,6 +22,13 @@ public class Date {
 		year = y;
 	}
 	
+	/** Copy constructor */
+	public Date(Date d){
+		month = d.getMonth();
+		day = d.getDay();
+		year = d.getYear();
+	}
+	
 	/** Construct a date from a string, default year is 2017 
 	 * Uses the form : "October 8" */
 	public Date(String d){

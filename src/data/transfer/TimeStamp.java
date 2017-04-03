@@ -10,10 +10,17 @@ import java.text.DecimalFormat;
 public class TimeStamp {
 	private int hours;
 	private int minutes;
+	
 	/** Construct a new time stamp */
 	public TimeStamp(int h, int m){
 		hours = h;
 		minutes = m;
+	}
+	
+	/** Copy constructor */
+	public TimeStamp(TimeStamp t){
+		hours = t.getHours();
+		minutes = t.getMinutes();
 	}
 	
 	/**
