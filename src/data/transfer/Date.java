@@ -30,7 +30,7 @@ public class Date {
 	}
 	
 	/** Construct a date from a string, default year is 2017 
-	 * Uses the form : "October 8" */
+	 * Uses the form : "October 8 2018" */
 	public Date(String d){
 		int spaces = 0;
 		String temp = "";
