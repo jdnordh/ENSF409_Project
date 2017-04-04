@@ -1,5 +1,7 @@
 package data.transfer;
 
+import java.util.Vector;
+
 /**
  * This class is sent by the client to the server to ask for tasks to be done
  * 
@@ -11,6 +13,12 @@ package data.transfer;
  * if it is a flight search: query (use FLIGHT or ALL_FLIGHTS - see definitions)
  * BOOK_FLIGHT: flight, user, seats
  * CANCEL_TICKET: user, ticket
+ * 
+ * --- The following types are admin only types, so user is inputed to check if the user is admin ---
+ * ADD_FLIGHT: user, flight
+ * ADD_MULTIPLE_FLIGHTS: user, multiple_flights
+ * REMOVE_FLIGHT: user, flight
+ * REMOVE_TICKET: user, ticket
  * 
  * @author Jordan Nordh
  *
@@ -39,8 +47,10 @@ public class ClientRequestCom extends ServerCom{
 	private String search;
 	/** What type of query is this, use only declared types at the top*/
 	private int query;
-	/** The flight wanting to be booked/deleted */
+	/** The flight wanting to be booked/deleted/added */
 	private Flight flight;
+	/** The flights that need to be added to the database */
+	private Vector<Flight> multiple_flights;
 	/** Used only for deleting tickets */
 	private Ticket ticket;
 	/** amount of seats wanting to be booked */
@@ -105,6 +115,14 @@ public class ClientRequestCom extends ServerCom{
 
 	public void setTicket(Ticket ticket) {
 		this.ticket = ticket;
+	}
+
+	public Vector<Flight> getMultiple_flights() {
+		return multiple_flights;
+	}
+
+	public void setMultiple_flights(Vector<Flight> multiple_flights) {
+		this.multiple_flights = multiple_flights;
 	}
 
 }
