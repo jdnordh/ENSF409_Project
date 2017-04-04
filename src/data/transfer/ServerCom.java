@@ -1,6 +1,9 @@
 package data.transfer;
 
-public abstract class ServerCom implements ComTypes{
+import java.io.Serializable;
+
+public abstract class ServerCom implements ComTypes, Serializable{
+	protected static final long serialVersionUID = 1L;
 	protected int type;
 	
 	public ServerCom(int t){

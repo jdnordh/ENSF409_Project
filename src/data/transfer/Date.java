@@ -1,11 +1,15 @@
 package data.transfer;
+
+import java.io.Serializable;
+
 /**
  * Used to store a date with day, month, year
  * 
  * @author Jordan Nordh & Jeremy Phillips
  *
  */
-public class Date {
+public class Date implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private int month;
 	private int day;
 	private int year;
