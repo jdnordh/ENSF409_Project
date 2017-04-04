@@ -26,6 +26,7 @@ public class TicketServer {
 	private CommandThread command;
 	private Vector<InputThread> inputThreads;
 	private Vector<OutputThread> outputThreads;
+	private Vector<TaskThread> taskThreads;
 	private Queue<Task> tasks;
 	private Queue<Task> finishedTasks;
 	private Socket [] sockets;
@@ -42,6 +43,25 @@ public class TicketServer {
 			database = new Database();
 			tasks = new Queue<Task>();
 			sockets = new Socket[20];
+			
+			// Make and start the input and output thread pools
+			inputThreads = new Vector<InputThread>();
+			outputThreads = new Vector<OutputThread>();
+			for (int i = 0; i < 20; i++){
+				InputThread temp1 = new InputThread(i, null, tasks);
+				OutputThread temp2 = new OutputThread(i, null, finishedTasks);
+				temp1.start();
+				temp2.start();
+				inputThreads.add(temp1);
+				outputThreads.add(temp2);
+			}
+			taskThreads = new Vector<TaskThread>();
+			for (int i = 0; i < 5; i++){
+				TaskThread thread = new TaskThread(i, tasks, finishedTasks, database);
+				thread.start();
+				taskThreads.add(thread);
+			}
+			
 			command = new CommandThread();
 			command.start();
 		} catch (IOException e){
@@ -66,6 +86,8 @@ public class TicketServer {
 					//Threads.add(a);
 					//a.start();
 					System.out.println(++connections);
+					connections = connections % 20;
+					//TODO fix the amount of connections allowed, as it is currently wrong
 				}
 			}
 			

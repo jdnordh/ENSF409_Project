@@ -11,15 +11,13 @@ public class InputThread extends Thread{
 	private Socket socket;
 	private ObjectInputStream in;
 	private Queue<Task> tasks;
-	private Database database;
 	
 	private boolean loggedIn;
 	private boolean isAdmin;
 	
-	public InputThread(int n, Socket s, Queue<Task> t, Database d){
-		super(Integer.toString(n));
+	public InputThread(int n, Socket s, Queue<Task> t){
+		super(Integer.toString(n + 1));
 		name = n;
-		database = d;
 		tasks = t;
 		loggedIn = false;
 		try {
@@ -31,12 +29,15 @@ public class InputThread extends Thread{
 	
 	public void run(){
 		try {
-			ServerCom temp = (ServerCom) in.readObject();
-			//TODO create task from server com, add to tasks queue, use database and name
-			Task t = new Task();
-			tasks.enQueue(t);
-			
-			sleep(1);
+			while (true){
+				while (socket == null) sleep(1);
+				ServerCom temp = (ServerCom) in.readObject();
+				//TODO create task from server com, add to tasks queue, use database and name
+				Task t = new Task();
+				tasks.enQueue(t);
+				
+				sleep(1);
+			}
 		} catch (InterruptedException e){
 			System.out.println("Error: " + e.getMessage());
 		} catch (ClassNotFoundException e) {
@@ -47,5 +48,9 @@ public class InputThread extends Thread{
 			System.out.println("Error: " + e.getMessage());
 			//TODO send a operation confirm back to the client to say bad com
 		}
+	}
+	/** Set the socket */
+	public void setSocket(Socket s){
+		socket = s;
 	}
 }

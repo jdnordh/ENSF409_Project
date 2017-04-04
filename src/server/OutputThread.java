@@ -11,12 +11,10 @@ public class OutputThread extends Thread{
 	private Socket socket;
 	private ObjectOutputStream out;
 	private Queue<Task> finishedTasks;
-	private Database database;
 	
-	public OutputThread(int n, Socket s, Queue<Task> f, Database d){
-		super(Integer.toString(n));
+	public OutputThread(int n, Socket s, Queue<Task> f){
+		super(Integer.toString(n + 1));
 		name = n;
-		database = d;
 		finishedTasks = f;
 		try {
 			out = new ObjectOutputStream(socket.getOutputStream());
@@ -28,6 +26,7 @@ public class OutputThread extends Thread{
 	public void run(){
 		try {
 			while (true){
+				while (socket == null) sleep(1);
 				if (!finishedTasks.isEmpty()){
 					if (finishedTasks.deQueueNoRemoval().belongsTo(name)){
 						Task temp = finishedTasks.deQueue();
@@ -40,5 +39,9 @@ public class OutputThread extends Thread{
 		} catch (InterruptedException e){
 			System.out.println("Error: " + e.getMessage());
 		}
+	}
+	/** Set the socket */
+	public void setSocket(Socket s){
+		socket = s;
 	}
 }
