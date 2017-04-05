@@ -5,9 +5,11 @@ import java.util.Vector;
 /**
  * This class is sent by the client to the server to ask for tasks to be done
  * 
+ * The following is how to use the ComTypes in this class:
+ * 
  * These fields need to be filled in when creating a client request:
- * REGISTER_USER: username, password, birthday, firstname, lastname
- * LOG_IN: username, password
+ * REGISTER_USER: user
+ * LOG_IN: user
  * QUERY:
  * if it is a ticket search: query (use TICKET or ALL_TICKETS - see definitions), user
  * if it is a flight search: query (use FLIGHT or ALL_FLIGHTS - see definitions)
@@ -25,16 +27,18 @@ import java.util.Vector;
  */
 public class ClientRequestCom extends ServerCom{
 	private static final long serialVersionUID = 1L;
+	
+	// the following ints are for query type, not request types
 	/** For searching through flights via a city, either destination or source */
 	public static final int FLIGHT_BY_CITY = 0;
 	/** For searching for flights by the source city */
 	public static final int FLIGHT_BY_SOURCE = 1;
 	/** For searching for flights by the destination city */
 	public static final int FLIGHT_BY_DESTINATION = 2;
-	/** For searching for tickets belonging to the given user */
-	public static final int TICKET = 3;
 	/** Get all flights */
-	public static final int ALL_FLIGHTS = 4;
+	public static final int ALL_FLIGHTS = 3;
+	/** For searching for tickets belonging to the given user */
+	public static final int TICKET = 4;
 	/** Get all tickets, ADMIN ONLY */
 	public static final int ALL_TICKETS = 5;
 	/** The following fields are not always used, depending on the type of request */

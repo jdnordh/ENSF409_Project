@@ -7,7 +7,7 @@ import java.util.Vector;
  * @author Jordan Nordh
  *
  */
-public class ServerOuputCom extends ServerCom{
+public class ServerOutputCom extends ServerCom{
 	private static final long serialVersionUID = 1L;
 	/** These fields are selectively used depending on the type of com*/
 	
@@ -15,10 +15,8 @@ public class ServerOuputCom extends ServerCom{
 	private Vector<Flight> flights;
 	/** A vector of tickets from a search */
 	private Vector<Ticket> tickets;
-	/** A status of an operation*/
-	private boolean good;
 	
-	public ServerOuputCom(int t) {
+	public ServerOutputCom(int t) {
 		super(t);
 	}
 	
@@ -26,7 +24,7 @@ public class ServerOuputCom extends ServerCom{
 	 * Return flights com
 	 * @param f
 	 */
-	public ServerOuputCom(Vector<Flight> f) {
+	public ServerOutputCom(Vector<Flight> f) {
 		super(RETURN_QUERY_FLIGHT);
 		flights = f;
 	}
@@ -36,26 +34,9 @@ public class ServerOuputCom extends ServerCom{
 	 * @param t RETURN_QUERY_TICKET only
 	 * @param f Vector of tickets
 	 */
-	public ServerOuputCom(int t, Vector<Ticket> f) {
+	public ServerOutputCom(int t, Vector<Ticket> f) {
 		super(t);
 		tickets = f;
-	}
-	
-	/**
-	 * Confirm status com
-	 * @param t Type, USER_CONFIRM, BOOK_CONFIRM
-	 * @param b Boolean, whether or not the operation was successful
-	 */
-	public ServerOuputCom(int t, boolean b){
-		super(t);
-		good = b;
-	}
-	
-	/**
-	 * @return If the operation was successful
-	 */
-	public boolean wasSuccessful(){
-		return good;
 	}
 	
 	/**
