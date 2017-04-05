@@ -25,6 +25,7 @@ public class Database {
 	private Statement statement;
 	
 	private int Table_Tickets;
+	private int amount_users;
 	/**
 	 * Construct a new medium that connects to the database
 	 */
@@ -34,9 +35,67 @@ public class Database {
 			statement = (Statement) connection.createStatement();
 			ResultSet result = statement.executeQuery("select count(*) from tickets");
 			while (result.next()) Table_Tickets = result.getInt(1);
+			result = statement.executeQuery("select count(*) from users");
+			while (result.next()) amount_users = result.getInt(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Attempt to log in with user credentials
+	 * @param user User
+	 * @return True if log in was successful
+	 */
+	public boolean login(User user){
+		try {
+			ResultSet result = statement.executeQuery("SELECT * FROM users WHERE username = '" + user.getUsername() + "'");
+			while (result.next()){
+				String p = result.getString(3);
+				int admin = result.getInt(7);
+				if (admin == 1 && p.equals(user.getPassword())) {
+					user.setAdmin(true);
+					System.out.println("Admin logged on");
+				}
+				else user.setAdmin(false);
+				return p.equals(user.getPassword());
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+	}
+	
+	/**
+	 * Register a new user, cannot register a new admin, that is only done server side
+	 * @param user
+	 * @return True if register was successful
+	 */
+	public boolean register(User user){
+		try {
+			ResultSet result = statement.executeQuery("SELECT username FROM users WHERE username = '" + user.getUsername() + "'");
+			while (result.next()){
+				return false;
+			}
+			
+			String query = "INSERT users VALUES(?,?,?,?,?,?,?)";
+			PreparedStatement state = connection.clientPrepareStatement(query);
+			state.setString(1, Integer.toString(++amount_users));
+			state.setString(2, user.getUsername());
+			state.setString(3, user.getPassword());
+			state.setString(4, user.getFirstName());
+			state.setString(5, user.getLastName());
+			state.setString(6, user.getBirthday().toString());
+			state.setString(7, Integer.toString(0));
+			state.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 	/**
@@ -341,14 +400,13 @@ public class Database {
 	}
 	
 	/**
-	 * Admin tool: Remove given ticket
+	 *  Remove given ticket
 	 * @param user User
 	 * @param ticket ticket
 	 * @return True if removed
 	 */
 	public boolean removeTicket(User user, Ticket ticket){
 		if (!user.isAdmin()) return false;
-		//TODO fix this
 		try{
 			Statement s = (Statement) connection.createStatement();
 			String id = Integer.toString(ticket.getId());
@@ -416,12 +474,16 @@ public class Database {
 		Database d = new Database();
 		User user = new User("Bob", "Sagit", new Date(1, 1, 2017));
 		user.setAdmin(true);
+		user.setUsername("admin");
+		user.setPassword("password");
+		if (d.login(user)) System.out.println("Logged in");
+		else System.out.println("Log in failed");
 		
-		//d.bookTicket(user, new Flight("770168,Amarillo,Port St. Lucie,7:27,4:27,July 21,165,165,597"), 2);
-		//if (d.removeTicket(user, new Flight("100100,Calgary,Edmonton,13:38,0:33,August 31 2017,123,123,145"))) System.out.println("Done");
-		Ticket bob = new Ticket("00000,770168,Bob,Sagit,January 1 2017,597");
-		d.removeTicket(user, bob);
-		//d.test();
-		//Flight [] f = d.browse();
+		
+		//user = new User("Bob", "Sagit", new Date(1, 1, 2017));
+		//user.setUsername("bobsagit");
+		//user.setPassword("123456789");
+		//if (d.register(user)) System.out.println("Registered");
+		//else System.out.println("Register failed");
 	}
 }

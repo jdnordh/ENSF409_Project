@@ -6,8 +6,8 @@ import java.util.Vector;
  * This class is sent by the client to the server to ask for tasks to be done
  * 
  * These fields need to be filled in when creating a client request:
- * REGISTER_USER: username, password, birthday, firstname, lastname
- * LOG_IN: username, password
+ * REGISTER_USER: user
+ * LOG_IN: user
  * QUERY:
  * if it is a ticket search: query (use TICKET or ALL_TICKETS - see definitions), user
  * if it is a flight search: query (use FLIGHT or ALL_FLIGHTS - see definitions)
@@ -25,6 +25,7 @@ import java.util.Vector;
  */
 public class ClientRequestCom extends ServerCom{
 	private static final long serialVersionUID = 1L;
+	// the following ints are for query type, not request types
 	/** For searching through flights via a city, either destination or source */
 	public static final int FLIGHT_BY_CITY = 0;
 	/** For searching for flights by the source city */

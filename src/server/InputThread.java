@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
+import data.transfer.ClientRequestCom;
+import data.transfer.ComTypes;
 import data.transfer.ServerCom;
 
 public class InputThread extends Thread{
@@ -16,7 +18,7 @@ public class InputThread extends Thread{
 	private boolean isAdmin;
 	
 	public InputThread(int n, Socket s, Queue<Task> t){
-		super(Integer.toString(n + 1));
+		super(Integer.toString(n));
 		name = n;
 		tasks = t;
 		loggedIn = false;
@@ -31,9 +33,53 @@ public class InputThread extends Thread{
 		try {
 			while (true){
 				while (socket == null) sleep(1);
-				ServerCom temp = (ServerCom) in.readObject();
+				ClientRequestCom req = (ClientRequestCom) in.readObject();
 				//TODO create task from server com, add to tasks queue, use database and name
-				Task t = new Task();
+				int type = req.type();
+				Task t = new Task(type, name);
+				if (type == ComTypes.REGISTER_USER){
+					t.setUser(req.getUser());
+				}
+				else if (type == ComTypes.LOG_IN){
+					t.setUser(req.getUser());
+					isAdmin = t.getUser().isAdmin();
+				}
+				else if (type == ComTypes.QUERY){
+					t.setQuery(req.getQuery());
+					t.setSearch(req.getSearch());
+					if (req.getQuery() == ClientRequestCom.TICKET || req.getQuery() == ClientRequestCom.ALL_TICKETS){
+						t.setUser(req.getUser());
+					}
+				}
+				else if (type == ComTypes.BOOK_FLIGHT){
+					t.setFlight(req.getFlight());
+					t.setUser(req.getUser());
+					t.setSeats(req.getSeats());
+				}
+				else if (type == ComTypes.CANCEL_TICKET){
+					t.setUser(req.getUser());
+					t.setTicket(req.getTicket());
+				}
+				else if (type == ComTypes.ADD_FLIGHT){
+					t.setFlight(req.getFlight());
+					t.setUser(req.getUser());
+				}
+				else if (type == ComTypes.ADD_MULTIPLE_FLIGHTS){
+					t.setMultiple_flights(req.getMultiple_flights());
+					t.setUser(req.getUser());
+				}
+				else if (type == ComTypes.REMOVE_FLIGHT){
+					t.setFlight(req.getFlight());
+					t.setUser(req.getUser());
+				}
+				else if (type == ComTypes.REMOVE_TICKET){
+					t.setTicket(req.getTicket());
+					t.setUser(req.getUser());
+				}
+				else {
+					Task bad = new Task(Task.BAD_REQUEST, name);
+					tasks.enQueue(bad);
+				}
 				tasks.enQueue(t);
 				
 				sleep(1);
@@ -46,7 +92,8 @@ public class InputThread extends Thread{
 			System.out.println("Error: " + e.getMessage());
 		} catch (ClassCastException e){
 			System.out.println("Error: " + e.getMessage());
-			//TODO send a operation confirm back to the client to say bad com
+			Task bad = new Task(Task.BAD_REQUEST, name);
+			tasks.enQueue(bad);
 		}
 	}
 	/** Set the socket */

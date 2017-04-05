@@ -21,6 +21,10 @@ public interface ComTypes {
 	public static final int BOOK_CONFIRM = 13;
 	public static final int FLIGHT_DELETE_CONFIRM = 14;
 	public static final int TICKET_DELETE_CONFIRM = 15;
-	
+	public static final int BAD_REQUEST = 50;
+	public static final int FAILED_GENERAL = 51;
+	public static final int FAILED_LOGIN = 52;
+	public static final int FAILED_REGISTER = 53;
+	public static final int FAILED = 54;
 	
 }

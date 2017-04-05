@@ -5,19 +5,23 @@ import java.io.Serializable;
 public class User implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String username;
+	/** This field should only be filled in when registering or logging in */
+	private String password;
 	private String firstName;
 	private String lastName;
 	private Date birthday;
+	/** This field is for server side only */
 	private boolean admin;
 	
 	/** Construct an empty user */
-	public User(){}
+	public User(){admin = false;}
 	
 	/** Construct a new user */
 	public User(String fn, String ln, Date b){
 		firstName = fn;
 		lastName = ln;
 		birthday = b;
+		admin = false;
 	}
 	
 	/**
@@ -66,5 +70,13 @@ public class User implements Serializable{
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

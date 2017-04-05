@@ -13,7 +13,7 @@ public class TaskThread extends Thread{
 	 * @param d Database
 	 */
 	public TaskThread(int n, Queue<Task> t, Queue<Task> f, Database d){
-		super("Task thread " + Integer.toString(n + 1));
+		super("Task thread " + Integer.toString(n));
 		database = d;
 		tasks = t;
 		finishedTasks = f;
@@ -26,6 +26,10 @@ public class TaskThread extends Thread{
 					Task t = tasks.deQueue();
 					t.perform(database);
 					if (t.isFinished()) finishedTasks.enQueue(t);
+					else {
+						Task notFinished = new Task(Task.FAILED, t.belongsTo());
+						finishedTasks.enQueue(notFinished);
+					}
 				}
 				sleep(1);
 			}
