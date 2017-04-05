@@ -220,7 +220,9 @@ public class ClientGui extends JFrame{
 			}
 			
 			else if(e.getSource() == login) {
+				// TODO create client request so server can handle logins
 				
+				String p = new String(password.getPassword());  //Use this string for password
 				
 				if(username.getText().equals("Admin1") || username.getText().equals("Admin2"))
 				{
@@ -231,7 +233,7 @@ public class ClientGui extends JFrame{
 					}
 					else
 					{
-						JOptionPane.showMessageDialog(dialogFrame, "Password Incorrect.");
+						JOptionPane.showMessageDialog(dialogFrame, "Username/Password Incorrect.");
 						password.setText("");
 					}
 				}
