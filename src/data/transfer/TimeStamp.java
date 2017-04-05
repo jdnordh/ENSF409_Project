@@ -1,5 +1,6 @@
 package data.transfer;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 
 /**
@@ -7,7 +8,8 @@ import java.text.DecimalFormat;
  * @author Jordan Nordh
  *
  */
-public class TimeStamp {
+public class TimeStamp implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private int hours;
 	private int minutes;
 	

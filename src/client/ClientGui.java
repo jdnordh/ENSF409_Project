@@ -251,11 +251,12 @@ public class ClientGui extends JFrame{
 						newUserPassword.getText().equals("") || confirmUserPassword.getText().equals("") )
 				{
 					JOptionPane.showMessageDialog(dialogFrame, "One or More of the Required Fields are Blank.");
-
 				}
-				//create login
-				newUserWindow.dispose();
-				g = new ClientGui();
+				else	//create login
+				{
+					newUserWindow.dispose();
+					g = new ClientGui();
+				}
 			}
 			
 			else if(e.getSource() == cancelCreation) {
