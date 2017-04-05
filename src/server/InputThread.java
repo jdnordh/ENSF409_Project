@@ -88,6 +88,7 @@ public class InputThread extends Thread{
 			System.out.println("Error: " + e.getMessage());
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
+			socket = null;
 		} catch (ClassCastException e){
 			System.out.println("Error: " + e.getMessage());
 			Task bad = new Task(Task.BAD_REQUEST, name);

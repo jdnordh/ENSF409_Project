@@ -80,7 +80,10 @@ public class TicketServer {
 		try {
 			while (running){
 				if (connections < 20){
-					while (sockets[connectionIndex] != null) connectionIndex++;
+					while (sockets[connectionIndex] != null) {
+						connectionIndex++;
+						connectionIndex = connectionIndex % 20;
+					}
 					sockets[connectionIndex] = serverSocket.accept();
 					
 					connections = 0;
@@ -89,7 +92,6 @@ public class TicketServer {
 					}
 					
 					System.out.println(connections);
-					connectionIndex = connectionIndex % 20;
 					//TODO fix the amount of connections allowed, as it is currently wrong
 				}
 			}

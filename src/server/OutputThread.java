@@ -82,6 +82,7 @@ public class OutputThread extends Thread{
 			System.out.println("Error: " + e.getMessage());
 		} catch (IOException e){
 			System.out.println("Error: " + e.getMessage());
+			socket = null;
 		}
 	}
 	/** Set the socket */
