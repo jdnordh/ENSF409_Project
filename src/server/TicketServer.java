@@ -20,6 +20,7 @@ public class TicketServer {
 	private Database database;
 	
 	private int connections;
+	private int connectionIndex;
 	
 	private boolean running;
 	
@@ -39,10 +40,15 @@ public class TicketServer {
 			serverSocket = new ServerSocket(port, 50, a);
 			System.out.println("Server is now running on " + s.toString());
 			connections = 0;
+			connectionIndex = 0;
 			running = true;
 			database = new Database();
 			tasks = new Queue<Task>();
+			finishedTasks = new Queue<Task>();
 			sockets = new Socket[20];
+			for (int i = 0; i < 20; i++){
+				sockets[i] = null;
+			}
 			
 			// Make and start the input and output thread pools
 			inputThreads = new Vector<InputThread>();
@@ -74,19 +80,16 @@ public class TicketServer {
 		try {
 			while (running){
 				if (connections < 20){
-					socket = serverSocket.accept();
-					ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-					Vector<String> s = new Vector<String>();
-					s.add("Hello");
-					s.add("there");
-					out.writeObject(s);
-					out.flush();
-					//String name = "Client " + Integer.toString(connections++);
-					//TicketThread a = new TicketThread(name, socket);
-					//Threads.add(a);
-					//a.start();
-					System.out.println(++connections);
-					connections = connections % 20;
+					while (sockets[connectionIndex] != null) connectionIndex++;
+					sockets[connectionIndex] = serverSocket.accept();
+					
+					connections = 0;
+					for (int i = 0; i < 20; i++){
+						if (sockets[i] != null) connections++;
+					}
+					
+					System.out.println(connections);
+					connectionIndex = connectionIndex % 20;
 					//TODO fix the amount of connections allowed, as it is currently wrong
 				}
 			}

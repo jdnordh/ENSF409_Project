@@ -6,7 +6,6 @@ import java.net.Socket;
 
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
-import data.transfer.ServerCom;
 
 public class InputThread extends Thread{
 	private int name;
@@ -34,7 +33,6 @@ public class InputThread extends Thread{
 			while (true){
 				while (socket == null) sleep(1);
 				ClientRequestCom req = (ClientRequestCom) in.readObject();
-				//TODO create task from server com, add to tasks queue, use database and name
 				int type = req.type();
 				Task t = new Task(type, name);
 				if (type == ComTypes.REGISTER_USER){
@@ -42,7 +40,7 @@ public class InputThread extends Thread{
 				}
 				else if (type == ComTypes.LOG_IN){
 					t.setUser(req.getUser());
-					isAdmin = t.getUser().isAdmin();
+					isAdmin = t.getUser().isAdmin(); 		// Server check if the client is an admin when logging in
 				}
 				else if (type == ComTypes.QUERY){
 					t.setQuery(req.getQuery());
@@ -60,15 +58,15 @@ public class InputThread extends Thread{
 					t.setUser(req.getUser());
 					t.setTicket(req.getTicket());
 				}
-				else if (type == ComTypes.ADD_FLIGHT){
+				else if (type == ComTypes.ADD_FLIGHT && isAdmin){
 					t.setFlight(req.getFlight());
 					t.setUser(req.getUser());
 				}
-				else if (type == ComTypes.ADD_MULTIPLE_FLIGHTS){
+				else if (type == ComTypes.ADD_MULTIPLE_FLIGHTS && isAdmin){
 					t.setMultiple_flights(req.getMultiple_flights());
 					t.setUser(req.getUser());
 				}
-				else if (type == ComTypes.REMOVE_FLIGHT){
+				else if (type == ComTypes.REMOVE_FLIGHT && isAdmin){
 					t.setFlight(req.getFlight());
 					t.setUser(req.getUser());
 				}

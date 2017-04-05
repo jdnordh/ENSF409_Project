@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import data.transfer.ServerCom;
+import data.transfer.*;
 
 public class OutputThread extends Thread{
 	private int name;
@@ -30,31 +30,57 @@ public class OutputThread extends Thread{
 				if (!finishedTasks.isEmpty()){
 					if (finishedTasks.deQueueNoRemoval().belongsTo(name)){
 						Task temp = finishedTasks.deQueue();
-						
-						
-						
-						//TODO translate task temp into a servercom to give back to the client via object stream
-						
-						/*
-						 * public static final int REGISTER_USER = 0;
-							public static final int LOG_IN = 1;
-							public static final int QUERY = 2;
-							public static final int BOOK_FLIGHT = 3;
-							public static final int CANCEL_FLIGHT = 4;
-							public static final int ADD_FLIGHT = 30;
-							public static final int ADD_MULTIPLE_FLIGHTS= 31;
-							public static final int REMOVE_FLIGHT = 32;
-							public static final int REMOVE_TICKET = 33;
-							
-							public static final int BAD_REQUEST = 50;
-							public static final int FAILED = 51;
-												 */
-						
+						ServerOutputCom response = null;
+						if (temp.getType() == ComTypes.REGISTER_USER){
+							if (temp.isFinished()) response = new ServerOutputCom(ComTypes.USER_CONFIRM);
+							else response = new ServerOutputCom(ComTypes.FAILED_REGISTER);
+						}
+						else if (temp.getType() == ComTypes.LOG_IN){
+							if (temp.isFinished()) response = new ServerOutputCom(ComTypes.REGISTER_CONFIRM);
+							else response = new ServerOutputCom(ComTypes.FAILED_LOGIN);
+						}
+						else if (temp.getType() == ComTypes.QUERY){
+							if (temp.getQuery() <= ClientRequestCom.FLIGHT_BY_DESTINATION){
+								response = new ServerOutputCom(temp.getMultiple_flights());
+							}
+							else if (temp.getQuery() >= ClientRequestCom.TICKET){
+								response = new ServerOutputCom(ClientRequestCom.RETURN_QUERY_TICKET, temp.getMultiple_tickets());
+							}
+						}
+						else if (temp.getType() == ComTypes.BOOK_FLIGHT){
+							response = new ServerOutputCom(ClientRequestCom.BOOK_CONFIRM);
+						}
+						else if (temp.getType() == ComTypes.CANCEL_TICKET){
+							response = new ServerOutputCom(ClientRequestCom.TICKET_DELETE_CONFIRM);
+						}
+						else if (temp.getType() == ComTypes.ADD_FLIGHT){
+							response = new ServerOutputCom(ClientRequestCom.FLIGHT_ADD_CONFIRM);
+						}
+						else if (temp.getType() == ComTypes.ADD_MULTIPLE_FLIGHTS){
+							response = new ServerOutputCom(ClientRequestCom.FLIGHT_ADD_CONFIRM);
+						}
+						else if (temp.getType() == ComTypes.REMOVE_FLIGHT){
+							response = new ServerOutputCom(ClientRequestCom.FLIGHT_DELETE_CONFIRM);
+						}
+						else if (temp.getType() == ComTypes.REMOVE_TICKET){
+							response = new ServerOutputCom(ClientRequestCom.TICKET_DELETE_CONFIRM);
+						}
+						else if (temp.getType() == ComTypes.BAD_REQUEST){
+							response = new ServerOutputCom(ClientRequestCom.BAD_REQUEST);
+						}
+						else if (temp.getType() == ComTypes.FAILED){
+							response = new ServerOutputCom(ClientRequestCom.FAILED);
+						}
+						out.writeObject(response);
+						out.flush();
 					}
+					sleep(1);
 				}
 				sleep(1);
 			}
 		} catch (InterruptedException e){
+			System.out.println("Error: " + e.getMessage());
+		} catch (IOException e){
 			System.out.println("Error: " + e.getMessage());
 		}
 	}

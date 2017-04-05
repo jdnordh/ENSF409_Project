@@ -25,11 +25,7 @@ public class TaskThread extends Thread{
 				if (!tasks.isEmpty()){
 					Task t = tasks.deQueue();
 					t.perform(database);
-					if (t.isFinished()) finishedTasks.enQueue(t);
-					else {
-						Task notFinished = new Task(Task.FAILED, t.belongsTo());
-						finishedTasks.enQueue(notFinished);
-					}
+					finishedTasks.enQueue(t);
 				}
 				sleep(1);
 			}
