@@ -45,6 +45,11 @@ public class CustomerGui extends JFrame {
 	
 	protected JTextArea textArea;
 	
+	public CustomerGui(Object o){
+		cust = new CustomerGui();
+	}
+	
+	
 	public CustomerGui() {
 		this.setTitle("Welcome Customer");
 		this.setBounds(325, 225, 725, 600);
@@ -268,7 +273,7 @@ public class CustomerGui extends JFrame {
 	}*/
 
 	public static void main(String[] args) {
-		//CustomerGui g = new CustomerGui();
+		CustomerGui g = new CustomerGui();
 	}
 
 }

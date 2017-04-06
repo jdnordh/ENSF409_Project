@@ -6,12 +6,18 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ObjectOutputStream;
 
 import javax.swing.*;
+
+import data.transfer.ClientRequestCom;
+import data.transfer.ComTypes;
 
 public class ClientGui extends JFrame{
 
 	private static final long serialVersionUID = 1L;
+	
+	private ObjectOutputStream out;
 
 	/** Frames */
 	static ClientGui g;
@@ -43,7 +49,7 @@ public class ClientGui extends JFrame{
 	
 	/**password fields*/
 	private JPasswordField password;
-	private JTextField newUserPassword;
+	private JPasswordField newUserPassword;
 	private JPasswordField confirmUserPassword;
 
 	public AdminGui head;
@@ -222,11 +228,11 @@ public class ClientGui extends JFrame{
 			else if(e.getSource() == login) {
 				// TODO create client request so server can handle logins
 				
-				String p = new String(password.getPassword());  //Use this string for password
+				String pass = new String(password.getPassword());  //Use this string for password
 				
 				if(username.getText().equals("Admin1") || username.getText().equals("Admin2"))
 				{
-					if(password.getText().equals("pass"))
+					if(pass.equals("pass"))
 					{
 						loginWindow.dispose();
 						new AdminGui(null);
@@ -238,7 +244,9 @@ public class ClientGui extends JFrame{
 					}
 				}
 				else
+				{
 					new CustomerGui();
+				}
 								
 			}
 			
@@ -248,15 +256,29 @@ public class ClientGui extends JFrame{
 			}
 			
 			else if(e.getSource() == createAccount) {
+				
+				String pass = new String(newUserPassword.getPassword());  //Use this string for password
+				String confirmPass = new String(confirmUserPassword.getPassword());  //Use this string for password
+
+				
 				if(newUserFN.getText().equals("") || newUserLN.getText().equals("") ||
-						newUserUN.getText().equals("") || newUserUN.getText().equals("") || 
-						newUserPassword.getText().equals("") || confirmUserPassword.getPassword().length < 1 )
+						newUserUN.getText().equals("") || pass.equals("") || 
+						confirmPass.equals(""))
 				{
 					JOptionPane.showMessageDialog(dialogFrame, "One or More of the Required Fields are Blank.");
 				}
-				else	//create login
+				
+				else if(!pass.equals(confirmPass))
+				{
+					JOptionPane.showMessageDialog(dialogFrame, "Password fields are not the same.");
+					newUserPassword.setText("");
+					confirmUserPassword.setText("");
+				}
+				else
 				{
 					newUserWindow.dispose();
+					ClientRequestCom crc = new ClientRequestCom(ComTypes.REGISTER_USER);
+					//crc.setUser(newUserFN.getText(), newUserLN.getText(), );
 					g = new ClientGui();
 				}
 			}
@@ -273,5 +295,13 @@ public class ClientGui extends JFrame{
 	
 	public static void main(String[] args){
 		g = new ClientGui();
+	}
+
+	public ObjectOutputStream getOut() {
+		return out;
+	}
+
+	public void setOut(ObjectOutputStream out) {
+		this.out = out;
 	}
 }
