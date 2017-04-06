@@ -3,14 +3,18 @@ package client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+import data.transfer.ComTypes;
 import data.transfer.ServerOutputCom;
 
 public class ClientInputThread extends Thread{
 	private ObjectInputStream in;
 	
+	private boolean loggedIn;
+	
 	public ClientInputThread(ObjectInputStream o){
 		super("Input Thread");
 		in = o;
+		loggedIn = false;
 	}
 	
 	
@@ -20,6 +24,12 @@ public class ClientInputThread extends Thread{
 			try {
 				 ServerOutputCom response = (ServerOutputCom) in.readObject();
 				
+				 if (response.type() == ComTypes.USER_CONFIRM){
+					 
+				 }
+				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
+					 
+				 }
 				
 				sleep(1);
 			} catch (IOException e) {
