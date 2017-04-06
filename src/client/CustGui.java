@@ -11,10 +11,10 @@ import javax.swing.*;
 
 
 
-public class CustomerGui extends JFrame {
+public class CustGui extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	private CustomerGui cust;
+	private CustGui cust;
 
 	/** Combo box */
 	protected JComboBox<String> comboBoxSearch;
@@ -46,15 +46,15 @@ public class CustomerGui extends JFrame {
 	
 	protected JTextArea textArea;
 	
-	public CustomerGui(Object o){
-		cust = new CustomerGui("Customer");
+	public CustGui(Object o){
+		cust = new CustGui("Customer");
 	}
 	
-	public CustomerGui(Object o, String user){
-		cust = new CustomerGui(user);
+	public CustGui(Object o, String user){
+		cust = new CustGui(user);
 	}
 	
-	public CustomerGui(String title) {
+	public CustGui(String title) {
 		this.setTitle("Welcome " + title);
 		this.setBounds(325, 225, 725, 600);
 		this.setLayout(new GridLayout(2, 2));
@@ -277,7 +277,7 @@ public class CustomerGui extends JFrame {
 	}*/
 
 	public static void main(String[] args) {
-		CustomerGui g = new CustomerGui(null, "Test");
+		CustGui g = new CustGui(null, "Test");
 	}
 
 }

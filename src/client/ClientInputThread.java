@@ -34,10 +34,12 @@ public class ClientInputThread extends Thread{
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
 					 user = response.getUser();
 					 customerGui = new CustomerGui(null, user.getFirstName());
+					 clientGui.dispose();
 				 }
 				 else if (response.type() == ComTypes.USER_CONFIRM_ADMIN){
 					 user = response.getUser();
 					 adminGui = new AdminGui(null, user.getFirstName());
+					 clientGui.dispose();
 				 }
 				 else if (response.type() == ComTypes.FAILED_LOGIN){
 					JOptionPane.showMessageDialog(null, "Username/Password Incorrect.");

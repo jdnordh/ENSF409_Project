@@ -230,7 +230,7 @@ public class ClientGui extends JFrame{
 				
 				String pass = new String(password.getPassword());  //Use this string for password
 				
-				if(username.getText().equals("Admin1") || username.getText().equals("Admin2"))
+				/*if(username.getText().equals("Admin1") || username.getText().equals("Admin2"))
 				{
 					if(pass.equals("pass"))
 					{
@@ -247,6 +247,7 @@ public class ClientGui extends JFrame{
 				{
 					new CustomerGui();
 				}
+				*/
 								
 			}
 			
@@ -256,11 +257,11 @@ public class ClientGui extends JFrame{
 			}
 			
 			else if(e.getSource() == createAccount) {
-				
+				System.out.println("Creating new account");
 				String pass = new String(newUserPassword.getPassword());  //Use this string for password
 				String confirmPass = new String(confirmUserPassword.getPassword());  //Use this string for password
 
-				
+			
 				if(newUserFN.getText().equals("") || newUserLN.getText().equals("") ||
 						newUserUN.getText().equals("") || pass.equals("") || 
 						confirmPass.equals(""))
@@ -279,7 +280,8 @@ public class ClientGui extends JFrame{
 					newUserWindow.dispose();
 					ClientRequestCom crc = new ClientRequestCom(ComTypes.REGISTER_USER);
 					//crc.setUser(newUserFN.getText(), newUserLN.getText(), );
-					g = new ClientGui();
+					
+					//g = new ClientGui();
 				}
 			}
 			
