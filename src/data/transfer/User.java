@@ -25,6 +25,23 @@ public class User implements Serializable{
 	}
 	
 	/**
+	 * Create a user with all fields filled in
+	 * @param f First name
+	 * @param l Last name
+	 * @param un Username
+	 * @param pw Password
+	 * @param d Birthday
+	 */
+	public User(String f, String l, String un, String pw, Date d){
+		firstName = f;
+		lastName = l;
+		birthday = d;
+		username = un;
+		password = pw;
+		admin = false;
+	}
+	
+	/**
 	 * Check if two users are equal
 	 * @param u User to check
 	 * @return True if equal

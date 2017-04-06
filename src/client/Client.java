@@ -44,11 +44,11 @@ public class Client {
 	public void communicate()  {
 		System.out.println("Starting...");
 		System.out.println("Got connection: " + socket.toString());
-		//in = new ClientInputThread(objectIn);
-		//in.start();
+		in = new ClientInputThread(objectIn);
+		in.start();
 			
-		//Gui = new ClientGui();
-		//Gui.setVisible(true);
+		Gui = new ClientGui();
+		Gui.setVisible(true);
 		try {
 			User u = new User();
 			u.setUsername("user");

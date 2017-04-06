@@ -18,6 +18,7 @@ public interface ComTypes {
 	public static final int RETURN_QUERY_FLIGHT = 10;
 	public static final int RETURN_QUERY_TICKET = 11;
 	public static final int USER_CONFIRM = 12;
+	public static final int USER_CONFIRM_ADMIN = 22;
 	public static final int REGISTER_CONFIRM = 13;
 	public static final int BOOK_CONFIRM = 14;
 	public static final int FLIGHT_DELETE_CONFIRM = 15;

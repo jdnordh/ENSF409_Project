@@ -60,7 +60,10 @@ public class ClientRequestCom extends ServerCom{
 	/** amount of seats wanting to be booked */
 	private int seats;
 	
-	
+	/**
+	 * Construct a client request of type t
+	 * @param t Type
+	 */
 	public ClientRequestCom(int t) {
 		super(t);
 	}

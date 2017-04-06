@@ -15,6 +15,8 @@ public class ServerOutputCom extends ServerCom{
 	private Vector<Flight> flights;
 	/** A vector of tickets from a search */
 	private Vector<Ticket> tickets;
+	/** The user associated with the task */
+	private User user;
 	
 	public ServerOutputCom(int t) {
 		super(t);
@@ -55,5 +57,13 @@ public class ServerOutputCom extends ServerCom{
 	public Vector<Ticket> getTickets(){
 		if (type == RETURN_QUERY_TICKET) return tickets;
 		else return null;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }
