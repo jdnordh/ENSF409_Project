@@ -250,7 +250,7 @@ public class ClientGui extends JFrame{
 			else if(e.getSource() == createAccount) {
 				if(newUserFN.getText().equals("") || newUserLN.getText().equals("") ||
 						newUserUN.getText().equals("") || newUserUN.getText().equals("") || 
-						newUserPassword.getText().equals("") || confirmUserPassword.getText().equals("") )
+						newUserPassword.getText().equals("") || confirmUserPassword.getPassword().length < 1 )
 				{
 					JOptionPane.showMessageDialog(dialogFrame, "One or More of the Required Fields are Blank.");
 				}

@@ -28,6 +28,9 @@ public class Task {
 	/** Previous task failed */
 	public static final int FAILED = 51;
 	
+	/** Only the task thread should create these types to tell the input thread that the user is logged in */
+	public static final int LOGIN_CONFIRM = 63;
+	
 	/** Type of task */
 	private int type;
 	/** belongs to certain thread */

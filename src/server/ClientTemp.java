@@ -1,19 +1,27 @@
-package client;
+package server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Vector;
 
+import client.Client;
+import client.ClientGui;
+import client.ClientInputThread;
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
-import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.User;
 
-public class Client {
+/**
+ * This is a temp class, will not be used
+ * 
+ * 
+ * @author Jordan
+ *
+ */
+public class ClientTemp {
 	private Socket socket;
 	private ObjectInputStream objectIn;
 	private ObjectOutputStream objectOut;
@@ -25,7 +33,7 @@ public class Client {
 	 * @param serverName Server name
 	 * @param portNumber port number
 	 */
-	public Client(String serverName, int portNumber) {
+	public ClientTemp(String serverName, int portNumber) {
 		try {
 			InetAddress a = InetAddress.getByName(serverName);
 			socket = new Socket(a, portNumber);
@@ -90,7 +98,7 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws IOException  {
-		Client a = new Client("70.77.96.98", 6000);
+		ClientTemp a = new ClientTemp("192.168.1.31", 6000);
 		a.communicate();
 	}
 }

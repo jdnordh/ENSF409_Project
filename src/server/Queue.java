@@ -13,7 +13,7 @@ public class Queue<D> {
 	}
 	
 	/** check if the queue is empty */
-	public boolean isEmpty(){
+	synchronized public boolean isEmpty(){
 		return empty;
 	}
 	

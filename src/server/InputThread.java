@@ -2,49 +2,42 @@ package server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.Socket;
 
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
 
 public class InputThread extends Thread{
 	private int name;
-	private Socket socket;
 	private ObjectInputStream in;
 	private Queue<Task> tasks;
 	
 	private boolean loggedIn;
 	private boolean isAdmin;
 	
-	public InputThread(int n, Socket s, Queue<Task> t){
+	public InputThread(int n, Queue<Task> t){
 		super(Integer.toString(n));
 		name = n;
 		tasks = t;
 		loggedIn = false;
-		try {
-			in = new ObjectInputStream(socket.getInputStream());
-		} catch (IOException e) {
-			System.out.println("Error: " + e.getMessage());
-		}
+		in = null;
 	}
 	
 	public void run(){
 		boolean running = true;
 		while (running){
 			try {
-				while (true){
-					while (socket == null) sleep(1);
-					ClientRequestCom req = (ClientRequestCom) in.readObject();
-					int type = req.type();
-					Task t = new Task(type, name);
-					if (type == ComTypes.REGISTER_USER){
-						t.setUser(req.getUser());
-					}
-					else if (type == ComTypes.LOG_IN){
-						t.setUser(req.getUser());
-						isAdmin = t.getUser().isAdmin(); 		// Server check if the client is an admin when logging in
-					}
-					else if (type == ComTypes.QUERY){
+				while (in == null) sleep(1);
+				ClientRequestCom req = (ClientRequestCom) in.readObject();
+				int type = req.type();
+				Task t = new Task(type, name);
+				if (type == ComTypes.REGISTER_USER){
+					t.setUser(req.getUser());
+				}
+				else if (type == ComTypes.LOG_IN){
+					t.setUser(req.getUser());
+				}
+				if (loggedIn){
+					if (type == ComTypes.QUERY){
 						t.setQuery(req.getQuery());
 						t.setSearch(req.getSearch());
 						if (req.getQuery() == ClientRequestCom.TICKET || req.getQuery() == ClientRequestCom.ALL_TICKETS){
@@ -80,26 +73,43 @@ public class InputThread extends Thread{
 						Task bad = new Task(Task.BAD_REQUEST, name);
 						tasks.enQueue(bad);
 					}
-					tasks.enQueue(t);
-					
-					sleep(1);
 				}
+				tasks.enQueue(t);
+				
+				sleep(1);
 			} catch (InterruptedException e){
 				System.out.println("Error: " + e.getMessage());
 			} catch (ClassNotFoundException e) {
 				System.out.println("Error: " + e.getMessage());
 			} catch (IOException e) {
 				System.out.println("Error: " + e.getMessage());
-				socket = null;
-			} catch (ClassCastException e){
+				in = null;
+			} catch (NullPointerException e) {
+				System.out.println("Error: " + e.getMessage());
+				in = null;
+			}
+			catch (ClassCastException e){
 				System.out.println("Error: " + e.getMessage());
 				Task bad = new Task(Task.BAD_REQUEST, name);
 				tasks.enQueue(bad);
 			}
 		}
 	}
-	/** Set the socket */
-	public void setSocket(Socket s){
-		socket = s;
+	
+	/** Set the stream */
+	public void setStream(ObjectInputStream s){
+		in = s;
+	}
+	
+	/** Set whether this connection has been logged in yet */
+	protected void setLogin(boolean b){
+		loggedIn = b;
+		System.out.println("Logged in: " + loggedIn);
+	}
+	
+	/** Set whether this connection has been logged in yet */
+	protected void setAdmin(boolean b){
+		isAdmin = b;
+		System.out.println("Admin: " + loggedIn);
 	}
 }
