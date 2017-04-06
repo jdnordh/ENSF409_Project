@@ -2,19 +2,22 @@ package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import javax.swing.JOptionPane;
 
 import data.transfer.ComTypes;
 import data.transfer.ServerOutputCom;
+import data.transfer.User;
 
 public class ClientInputThread extends Thread{
 	private ObjectInputStream in;
-	
-	private boolean loggedIn;
+	private ClientGui clientGui;
+	private CustomerGui customerGui;
+	private AdminGui adminGui;
+	private User user;
 	
 	public ClientInputThread(ObjectInputStream o){
 		super("Input Thread");
 		in = o;
-		loggedIn = false;
 	}
 	
 	
@@ -25,9 +28,48 @@ public class ClientInputThread extends Thread{
 				 ServerOutputCom response = (ServerOutputCom) in.readObject();
 				
 				 if (response.type() == ComTypes.USER_CONFIRM){
-					 
+					 user = response.getUser();
+					 customerGui = new CustomerGui(null, user.getFirstName()); 
 				 }
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
+					 user = response.getUser();
+					 customerGui = new CustomerGui(null, user.getFirstName());
+				 }
+				 else if (response.type() == ComTypes.USER_CONFIRM_ADMIN){
+					 user = response.getUser();
+					 adminGui = new AdminGui(null, user.getFirstName());
+				 }
+				 else if (response.type() == ComTypes.FAILED_LOGIN){
+					JOptionPane.showMessageDialog(null, "Username/Password Incorrect.");
+				 }
+				 else if (response.type() == ComTypes.FAILED_REGISTER){
+					JOptionPane.showMessageDialog(null, "Username is already taken");
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){ //TODO
+					
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+					 
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+					 
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+					 
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+					 
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+					 
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+					 
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+					 
+				 }
+				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
 					 
 				 }
 				
@@ -46,6 +88,16 @@ public class ClientInputThread extends Thread{
 				e.printStackTrace();
 			}
 		}
+	}
+
+	//Set and Get
+	public ClientGui getClientGui() {
+		return clientGui;
+	}
+
+
+	public void setClientGui(ClientGui clientGui) {
+		this.clientGui = clientGui;
 	}
 	
 }

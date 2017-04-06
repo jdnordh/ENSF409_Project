@@ -45,8 +45,12 @@ public class CustomerGui extends JFrame {
 	
 	protected JTextArea textArea;
 	
-	public CustomerGui() {
-		this.setTitle("Welcome Customer");
+	public CustomerGui(Object o, String user){
+		cust = new CustomerGui(user);
+	}
+	
+	public CustomerGui(String title) {
+		this.setTitle("Welcome " + title);
 		this.setBounds(325, 225, 725, 600);
 		this.setLayout(new GridLayout(2, 2));
 		

@@ -52,13 +52,13 @@ public class AdminGui extends JFrame{
 	private JTextField priceField;
 	private JTextField fileName;
 	
-	public AdminGui(Object o){
-		a = new AdminGui();
+	public AdminGui(Object o, String user){
+		a = new AdminGui(user);
 	}
 	
-	public AdminGui() {
+	public AdminGui(String user) {
 		
-		this.setTitle("Administration Mode");
+		this.setTitle(user + ": Administration Mode");
 		this.setBounds(325, 225, 300, 160);
 		this.setLayout(new GridLayout(3, 1));
 		
