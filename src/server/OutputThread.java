@@ -26,6 +26,7 @@ public class OutputThread extends Thread{
 					if (!finishedTasks.isEmpty()){
 						if (finishedTasks.deQueueNoRemoval().belongsTo(name)){
 							Task temp = finishedTasks.deQueue();
+							System.out.println("Output Thread "+ this.getName() + " doing task type: " + temp.getType());
 							ServerOutputCom response = null;
 							if (temp.getType() == ComTypes.REGISTER_USER){
 								if (temp.isFinished()) response = new ServerOutputCom(ComTypes.REGISTER_CONFIRM);
@@ -69,6 +70,7 @@ public class OutputThread extends Thread{
 							}
 							out.writeObject(response);
 							out.flush();
+							System.out.println("Output Thread "+ this.getName() + " wrote task type " + temp.getType() + " to stream");
 						}
 						sleep(1);
 					}

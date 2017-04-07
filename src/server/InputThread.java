@@ -38,6 +38,7 @@ public class InputThread extends Thread{
 				ClientRequestCom req = (ClientRequestCom) in.readObject();
 				int type = req.type();
 				Task t = new Task(type, name);
+				System.out.println("Input Thread "+ this.getName() + " doing task type: " + type);
 				if (type == ComTypes.REGISTER_USER){
 					t.setUser(req.getUser());
 					user = req.getUser();
