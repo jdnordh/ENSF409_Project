@@ -46,10 +46,13 @@ public class CustomerGui extends JFrame {
 	
 	protected JTextArea textArea;
 	
+<<<<<<< HEAD
+=======
 	public CustomerGui(Object o){
 		cust = new CustomerGui("Customer");
 	}
 	
+>>>>>>> dc03a7f533db491f8f84ee69dfb05b883468fe1b
 	public CustomerGui(Object o, String user){
 		cust = new CustomerGui(user);
 	}
