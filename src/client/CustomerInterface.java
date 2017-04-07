@@ -20,6 +20,7 @@ import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
 import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
+import data.transfer.Ticket;
 import data.transfer.User;
 
 
@@ -63,10 +64,10 @@ public class CustomerInterface extends JFrame {
 	private JButton returnToMain;
 
 	/** This is the list of clients */
-	protected JList<Flight> display;
-	private DefaultListModel<Flight> list;
-	protected JList<Flight> myDisplay;
-	private DefaultListModel<Flight> myList;
+	protected JList<Flight> flightList;
+	private DefaultListModel<Flight> flightModel;
+	protected JList<Ticket> ticketList;
+	private DefaultListModel<Ticket> ticketModel;
 	
 	/** This is the list of textAreas*/
 	protected JTextArea textArea;
@@ -269,19 +270,19 @@ public class CustomerInterface extends JFrame {
 	private JPanel botLeftPanel() {
 		JPanel panel = new JPanel();
 		
-		list = new DefaultListModel<Flight>();
-		display = new JList<Flight>(list);
-		display.setFont(new Font("Courier New", Font.BOLD, 12));
-		//display.addListSelectionListener(new ListAction());
-		display.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		display.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		display.setVisibleRowCount(-1);
+		flightModel = new DefaultListModel<Flight>();
+		flightList = new JList<Flight>(flightModel);
+		flightList.setFont(new Font("Courier New", Font.BOLD, 12));
+		//flightList.addListSelectionListener(new ListAction());
+		flightList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		flightList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		flightList.setVisibleRowCount(-1);
 		JScrollPane textAreaScrollPane = new JScrollPane();
 		textArea = new JTextArea();
 		textAreaScrollPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		textArea.setFont(new Font("Courier New", Font.BOLD, 12));
 		textArea.setEditable(false);
-		textAreaScrollPane = new JScrollPane(display);
+		textAreaScrollPane = new JScrollPane(flightList);
 		textAreaScrollPane.setPreferredSize(new Dimension(325, 260));
 		panel.add(textAreaScrollPane);
 
@@ -334,15 +335,15 @@ public class CustomerInterface extends JFrame {
 			else if (e.getSource() == searchButton){
 				if(comboBoxSearch.getSelectedItem().equals("Date(\"October 5 2017\")"))
 				{
-					//TODO search database and display flights on searched day
+					//TODO search database and flightList flights on searched day
 				}
 				else if(comboBoxSearch.getSelectedItem().equals("Source"))
 				{
-					//TODO search database and display flights from source
+					//TODO search database and flightList flights from source
 				}
 				else if(comboBoxSearch.getSelectedItem().equals("Destination"))
 				{
-					//TODO search database and display flights to dest
+					//TODO search database and flightList flights to dest
 				}
 			}
 			else if (e.getSource() == clearButton){
@@ -365,19 +366,19 @@ public class CustomerInterface extends JFrame {
 
 			//center
 			JPanel center = new JPanel();
-			myList = new DefaultListModel<Flight>();
-			myDisplay = new JList<Flight>(myList);
-			myDisplay.setFont(new Font("Courier New", Font.BOLD, 12));
-			//display.addListSelectionListener(new ListAction());
-			myDisplay.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-			myDisplay.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-			myDisplay.setVisibleRowCount(-1);
+			ticketModel = new DefaultListModel<Ticket>();
+			ticketList = new JList<Ticket>(ticketModel);
+			ticketList.setFont(new Font("Courier New", Font.BOLD, 12));
+			//flightList.addListSelectionListener(new ListAction());
+			ticketList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+			ticketList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+			ticketList.setVisibleRowCount(-1);
 			JScrollPane textAreaScrollPane = new JScrollPane();
 			myTextArea = new JTextArea();
 			textAreaScrollPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 			myTextArea.setFont(new Font("Courier New", Font.BOLD, 12));
 			myTextArea.setEditable(false);
-			textAreaScrollPane = new JScrollPane(myDisplay);
+			textAreaScrollPane = new JScrollPane(ticketList);
 			textAreaScrollPane.setPreferredSize(new Dimension(325, 260));
 			center.add(textAreaScrollPane);
 			myBookingsWindow.add(center, BorderLayout.CENTER);
@@ -408,7 +409,7 @@ public class CustomerInterface extends JFrame {
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			//client = ((JList<Client>)e.getSource()).getSelectedValue();
-			//client.displayInfo(clientIDIn, firstNameIn, lastNameIn, addressIn, postalIn, phoneNumIn, comboBox);
+			//client.flightListInfo(clientIDIn, firstNameIn, lastNameIn, addressIn, postalIn, phoneNumIn, comboBox);
 			//dThread.setClient(client);
 		}
 
@@ -417,6 +418,22 @@ public class CustomerInterface extends JFrame {
 
 	public static void main(String[] args) {
 		CustomerInterface cust = new CustomerInterface("Test", null);
+	}
+
+	public DefaultListModel<Ticket> getTicketList() {
+		return ticketModel;
+	}
+
+	public void setTicketModel(DefaultListModel<Ticket> ticketModel) {
+		this.ticketModel = ticketModel;
+	}
+
+	public DefaultListModel<Flight> getFlightList() {
+		return flightModel;
+	}
+
+	public void setFlightModel(DefaultListModel<Flight> flightModel) {
+		this.flightModel = flightModel;
 	}
 
 }

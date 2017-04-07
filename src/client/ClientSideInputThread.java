@@ -3,6 +3,7 @@ package client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
@@ -10,6 +11,7 @@ import data.transfer.ComTypes;
 import data.transfer.Date;
 import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
+import data.transfer.Ticket;
 import data.transfer.User;
 
 public class ClientSideInputThread extends Thread{
@@ -78,10 +80,27 @@ public class ClientSideInputThread extends Thread{
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
 					 //TODO  add vector of flights to a list
-					 
+					 Vector<Flight> f = response.getFlights();
+					 for (int i = 0; i < f.size(); i++){
+						 if (adminGui != null){
+							 adminGui.getFlightList().addElement(f.get(i));
+						 }
+						 else {
+							 customerGui.getFlightList().addElement(f.get(i));
+						 }
+					 }
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_TICKET){
 					//TODO  add vector of tickets to a list
+					 Vector<Ticket> t = response.getTickets();
+					 for (int i = 0; i < t.size(); i++){
+						 if (adminGui != null){
+							 adminGui.getTicketList().addElement(t.get(i));
+						 }
+						 else {
+							 customerGui.getTicketList().addElement(t.get(i));
+						 }
+					 }
 				 }
 				 else if (response.type() == ComTypes.BOOK_CONFIRM){
 					 JOptionPane.showMessageDialog(null, "Booking confirmed");

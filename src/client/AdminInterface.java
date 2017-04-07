@@ -616,5 +616,12 @@ public class AdminInterface extends JFrame{
 		
 		AdminInterface a = new AdminInterface(user, null);
 	}
-
+	
+	public DefaultListModel<Flight> getFlightList(){
+		return this.flightModel;
+	}
+	
+	public DefaultListModel<Ticket> getTicketList(){
+		return this.ticketModel;
+	}
 }
