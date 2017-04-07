@@ -116,6 +116,8 @@ public class Flight implements Serializable{
 	/** send this to a string */
 	public String toString(){
 		String res = "";
+		res += id;
+		res += ": ";
 		res += this.source;
 		res += " to ";
 		res += this.destination;

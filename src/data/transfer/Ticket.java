@@ -102,7 +102,27 @@ public class Ticket implements Serializable{
 		setPrice(Double.parseDouble(temp));
 	}
 	
-	
+	public String toString(){
+		String res = "Id: ";
+		res += id;
+		res += "\nSource: ";
+		res += source;
+		res += "\nDestination: ";
+		res += destination;
+		res += "\nDate: ";
+		res += date.toString();
+		res += "\nDeparture time: : ";
+		res += departureTime.toString();
+		res += "\nDuration: ";
+		res += duration.toString();
+		
+		res += "\nName: ";
+		res += user.getFirstName();
+		res += " ";
+		res += user.getLastName();
+		
+		return res;
+	}
 	
 	// Set and get
 	public int getId() {

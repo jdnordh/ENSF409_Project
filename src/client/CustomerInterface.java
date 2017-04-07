@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 
 import javax.swing.*;
@@ -325,7 +326,7 @@ public class CustomerInterface extends JFrame {
 							Flight f = selectedFlight;
 							crc.setFlight(f);
 							crc.setUser(user);
-							crc.setSeats(Integer.parseInt(seatsToBook.getText()));
+							crc.setSeats(1);	//TODO change when seatsToBook is fixed
 							objectOut.writeObject(crc);
 							objectOut.flush();
 						} catch (IOException e1) {
@@ -419,10 +420,26 @@ public class CustomerInterface extends JFrame {
 				flightModel.clear();
 			}
 			else if (e.getSource() == printTicket){
-				//TODO print ticket to text file
+				String t = "ticket_";
+				t += Integer.toString(ticketList.getSelectedValue().getId());
+				try{
+				    PrintWriter writer = new PrintWriter(t, "UTF-8");
+				    writer.println(ticketList.getSelectedValue().toString());
+				    writer.close();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+				}
 			}
 			else if (e.getSource() == cancelTicket){
-				//TODO
+				try {
+					ClientRequestCom req = new ClientRequestCom(ComTypes.CANCEL_TICKET);
+					req.setTicket(ticketList.getSelectedValue());
+					req.setUser(user);
+					objectOut.writeObject(req);						
+					objectOut.flush();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 			else if (e.getSource() == returnToMain){
 				myBookingsWindow.setVisible(false);
@@ -472,7 +489,6 @@ public class CustomerInterface extends JFrame {
 		textAreaScrollPane.setPreferredSize(new Dimension(325, 260));
 		center.add(textAreaScrollPane);
 		myBookingsWindow.add(center, BorderLayout.CENTER);
-		//TODO fill myticketlist with that users tickets 
 
 		//bot
 		JPanel bot = new JPanel();
@@ -512,8 +528,6 @@ public class CustomerInterface extends JFrame {
 				priceField.setText(temp);
 				selectedFlight = f;
 			}
-			//client.flightListInfo(clientIDIn, firstNameIn, lastNameIn, addressIn, postalIn, phoneNumIn, comboBox);
-			//dThread.setClient(client);
 		}
 
 		

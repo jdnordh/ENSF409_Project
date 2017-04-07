@@ -79,7 +79,7 @@ public class AdminInterface extends JFrame{
 	public AdminInterface(User u, ObjectOutputStream o) {
 		out = o;
 		user = u;
-		this.setTitle(user.getFirstName() + ": Administration Mode");
+		this.setTitle(user.getUsername() + ": Administration Mode");
 		this.setBounds(325, 225, 300, 160);
 		this.setLayout(new GridLayout(4, 1));
 		
@@ -405,6 +405,7 @@ public class AdminInterface extends JFrame{
 			}
 			else if (e.getSource() == cancelFlightsButton) {
 				start.setVisible(false);
+				flightModel.clear();
 				flightBrowseWindow.setVisible(true);
 				ClientRequestCom req = new ClientRequestCom(ComTypes.QUERY);
 				req.setQuery(ClientRequestCom.ALL_FLIGHTS);
@@ -542,9 +543,9 @@ public class AdminInterface extends JFrame{
 					}
 					else {
 						// error checking done
-						ClientRequestCom req = new ClientRequestCom(ComTypes.ADD_FLIGHT);
+						ClientRequestCom req = new ClientRequestCom(ComTypes.ADD_MULTIPLE_FLIGHTS);
 						Flight f = new Flight();
-						
+						Vector<Flight> flights = new Vector<Flight>();
 						
 						f.setId(Integer.parseInt(flightNumField.getText()));
 						f.setSource(departureField.getText());
@@ -614,9 +615,8 @@ public class AdminInterface extends JFrame{
 						f.setTotalSeats(Integer.parseInt(totSeatsField.getText()));
 						f.setavailableSeats(Integer.parseInt(totSeatsField.getText()));
 						f.setPrice(Double.parseDouble(priceField.getText()));
-						
-						
-						req.setFlight(f);
+						flights.add(f);
+						req.setMultiple_flights(flights);
 						req.setUser(user);
 						try {
 							out.writeObject(req);

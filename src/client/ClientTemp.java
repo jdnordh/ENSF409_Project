@@ -7,10 +7,10 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 /**
- * This is a temp class, will not be used
+ * Run this class to start the client
  * 
  * 
- * @author Jordan
+ * @author Jordan Nordh and Jeremy Phillips
  *
  */
 public class ClientTemp {
