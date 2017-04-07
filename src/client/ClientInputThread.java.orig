@@ -2,33 +2,26 @@ package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
 import data.transfer.ComTypes;
-import data.transfer.Date;
 import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.User;
 
-public class ClientSideInputThread extends Thread{
+public class ClientInputThread extends Thread{
 	private ObjectInputStream in;
-	/** This is only used to add to the guis */
-	private ObjectOutputStream out;
-	private LoginWindow loginWindow;
-	private CustomerInterface customerGui;
-	private AdminInterface adminGui;
+	private ClientGui clientGui;
+	private CustomerGui customerGui;
+	private AdminGui adminGui;
 	private User user;
 	
-	
-	public ClientSideInputThread(ObjectInputStream i, ObjectOutputStream o){
+	public ClientInputThread(ObjectInputStream o){
 		super("Input Thread");
-		in = i;
-		out = o;
+		in = o;
 	}
-	
-	//TODO must set user somewhere so that it can be used below
 	
 	
 	public void run(){
@@ -38,27 +31,18 @@ public class ClientSideInputThread extends Thread{
 				 ServerOutputCom response = (ServerOutputCom) in.readObject();
 				
 				 if (response.type() == ComTypes.USER_CONFIRM){
-					 user = loginWindow.getUser();
-					 CustomerInterface c = new CustomerInterface(user.getFirstName(), out);
-					 c.setVisible(true);
-					 setCustomerGui(c); 
-					 setAdminGui(null);
-					 loginWindow.close();
+					 user = response.getUser();
+					 setCustomerGui(new CustomerGui(null, user.getFirstName())); 
 				 }
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
-					 user = loginWindow.getUser();
-					 CustomerInterface c = new CustomerInterface(user.getFirstName(), out);
-					 c.setVisible(true);
-					 setCustomerGui(c);  
-					 setAdminGui(null);
-					 loginWindow.close();
+					 user = response.getUser();
+					 setCustomerGui(new CustomerGui(null, user.getFirstName()));
+					 clientGui.dispose();
 				 }
 				 else if (response.type() == ComTypes.USER_CONFIRM_ADMIN){
-					 user = loginWindow.getUser();
-					 AdminInterface c = new AdminInterface(user.getFirstName(), out);
-					 setCustomerGui(null); 
-					 setAdminGui(c);
-					 loginWindow.close();
+					 user = response.getUser();
+					 setAdminGui(new AdminGui(null, user.getFirstName()));
+					 clientGui.dispose();
 				 }
 				 else if (response.type() == ComTypes.FAILED_LOGIN){
 					JOptionPane.showMessageDialog(null, "Username/Password Incorrect.");
@@ -108,28 +92,33 @@ public class ClientSideInputThread extends Thread{
 	}
 
 	//Set and Get
-	
-	public void setLoginWindow(LoginWindow w){
-		loginWindow = w;
+	public ClientGui getClientGui() {
+		return clientGui;
 	}
 
-	public CustomerInterface getCustomerGui() {
+
+	public void setClientGui(ClientGui clientGui) {
+		this.clientGui = clientGui;
+	}
+
+
+	public CustomerGui getCustomerGui() {
 		return customerGui;
 	}
 
-	public void setCustomerGui(CustomerInterface customerGui) {
+
+	public void setCustomerGui(CustomerGui customerGui) {
 		this.customerGui = customerGui;
 	}
 
-	public AdminInterface getAdminGui() {
+
+	public AdminGui getAdminGui() {
 		return adminGui;
 	}
 
-	public void setAdminGui(AdminInterface adminGui) {
+
+	public void setAdminGui(AdminGui adminGui) {
 		this.adminGui = adminGui;
 	}
 	
-	public void setUser(User e){ 
-		user = e;
-	}
 }

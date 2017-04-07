@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import client.ClientGui;
+import client.ClientInputThread;
 import client.ClientSideInputThread;
 import client.LoginWindow;
 import data.transfer.ClientRequestCom;
@@ -77,7 +79,7 @@ public class ClientTemp {
 	}
 
 	public static void main(String[] args) throws IOException  {
-		ClientTemp a = new ClientTemp("70.77.96.98", 6000);
+		ClientTemp a = new ClientTemp("192.168.1.31", 6000);
 		System.out.println("CHere");
 		a.communicate();
 	}

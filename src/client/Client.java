@@ -16,7 +16,6 @@ import data.transfer.User;
 public class Client {
 	private Socket socket;
 	private ObjectInputStream objectIn;
-	protected ObjectOutputStream objectOut;
 	private ObjectOutputStream objectOut;
 	private ClientInputThread in;
 	private ClientGui Gui;

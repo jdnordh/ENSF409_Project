@@ -19,9 +19,6 @@ import data.transfer.User;
 
 
 public class LoginWindow extends JFrame{
-	
-	/** This is just a pointer to itself */
-	private LoginWindow selfPointer;
 
 	private static final long serialVersionUID = 1L;
 	
@@ -72,7 +69,6 @@ public class LoginWindow extends JFrame{
 		this.add(createCenterPanel());
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		selfPointer = this;
 		this.setVisible(true);
 	}
 
@@ -325,6 +321,7 @@ public class LoginWindow extends JFrame{
 									pass, new Date(Integer.parseInt(comboBoxDay.getSelectedItem().toString()),
 													Integer.parseInt(comboBoxMonth.getSelectedItem().toString()),
 													Integer.parseInt(comboBoxYear.getSelectedItem().toString()))));
+						user = crc.getUser();
 						objectOut.writeObject(crc);						
 						objectOut.flush();
 					} catch (IOException e1) {
@@ -382,6 +379,10 @@ public class LoginWindow extends JFrame{
 	public void setOut(ObjectOutputStream out) {
 		this.objectOut = out;
 	}
+	public User getUser(){
+		return user;
+	}
+	
 	public static void main(String [] args){
 		LoginWindow win = new LoginWindow(null);
 	}

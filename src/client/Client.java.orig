@@ -1,46 +1,38 @@
-package server;
+package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Vector;
 
-import client.ClientSideInputThread;
-import client.LoginWindow;
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
+import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.User;
 
-/**
- * This is a temp class, will not be used
- * 
- * 
- * @author Jordan
- *
- */
-public class ClientTemp {
+public class Client {
 	private Socket socket;
 	private ObjectInputStream objectIn;
-	private ObjectOutputStream objectOut;
-	private ClientSideInputThread in;
+	protected ObjectOutputStream objectOut;
+	private ClientInputThread in;
+	private ClientGui Gui;
 	
 	/**
-	 * Construct a GameClient
+	 * Construct a Client
 	 * @param serverName Server name
 	 * @param portNumber port number
 	 */
-	public ClientTemp(String serverName, int portNumber) {
+	public Client(String serverName, int portNumber) {
 		try {
 			InetAddress a = InetAddress.getByName(serverName);
-			System.out.println("Connecting to server...");
 			socket = new Socket(a, portNumber);
-			System.out.println("Connected to server");
 			objectOut = new ObjectOutputStream(socket.getOutputStream());
 			socket.getOutputStream().flush();
 			objectIn = new ObjectInputStream(socket.getInputStream());
-			System.out.println("Finished Constructing");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -51,13 +43,23 @@ public class ClientTemp {
 	 */
 	public void communicate()  {
 		System.out.println("Starting...");		
-		LoginWindow win = new LoginWindow(objectOut);
+		Gui = new ClientGui(null, objectOut, objectIn);
 		System.out.println("Got connection: " + socket.toString());
-		in = new ClientSideInputThread(objectIn, objectOut);
-		in.setLoginWindow(win);
+		in = new ClientInputThread(objectIn);
+		in.setClientGui(Gui);
 		in.start();
 		System.out.println("ClientInputThread running...");
 
+			
+			/*response = (ServerOutputCom) objectIn.readObject();
+			if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+				for (int i = 0; i < response.getFlights().size(); i++){
+					System.out.println("Destination: " + response.getFlights().get(i).getDestination());
+				}
+			}
+			else {
+				System.out.println("Type: " + response.type());
+			}*/
 			
 		try {
 			in.join();
@@ -77,8 +79,7 @@ public class ClientTemp {
 	}
 
 	public static void main(String[] args) throws IOException  {
-		ClientTemp a = new ClientTemp("70.77.96.98", 6000);
-		System.out.println("CHere");
+		Client a = new Client("192.168.1.31", 6000);
 		a.communicate();
 	}
 }
