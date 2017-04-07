@@ -13,10 +13,10 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 
-public class AdminGui extends JFrame{
+public class AdminInterface extends JFrame{
 	
 	/** Frames */
-	static AdminGui a;
+	static AdminInterface a;
 	private JFrame browseWindow;
 	private JFrame addFlightWindow;
 	private JFrame addFlightFileWindow;
@@ -52,11 +52,11 @@ public class AdminGui extends JFrame{
 	private JTextField priceField;
 	private JTextField fileName;
 	
-	public AdminGui(Object o, String user){
-		a = new AdminGui(user);
+	public AdminInterface(Object o, String user){
+		a = new AdminInterface(user);
 	}
 	
-	public AdminGui(String user) {
+	public AdminInterface(String user) {
 		
 		this.setTitle(user + ": Administration Mode");
 		this.setBounds(325, 225, 300, 160);
@@ -70,7 +70,7 @@ public class AdminGui extends JFrame{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	public AdminGui(boolean b) {
+	public AdminInterface(boolean b) {
 		return;
 	}
 
@@ -286,21 +286,21 @@ public class AdminGui extends JFrame{
 				if(browseWindow != null)
 				{
 					browseWindow.dispose();
-					a = new AdminGui("user");
-					//a = new AdminGui();
+					a = new AdminInterface("user");
+					//a = new AdminInterface();
 					//TODO fix these commented lines
 				}
 				else if(addFlightWindow != null)
 				{
 					addFlightWindow.dispose();
-					a = new AdminGui("user");
-					//a = new AdminGui();
+					a = new AdminInterface("user");
+					//a = new AdminInterface();
 				}
 				else if(addFlightFileWindow != null)
 				{
 					addFlightFileWindow.dispose();
-					a = new AdminGui("user");
-					//a = new AdminGui();
+					a = new AdminInterface("user");
+					//a = new AdminInterface();
 				}
 				
 			}
@@ -308,7 +308,7 @@ public class AdminGui extends JFrame{
 	}
 
 	public static void main(String[] args) {
-		a = new AdminGui("user");
+		a = new AdminInterface("user");
 	}
 
 }

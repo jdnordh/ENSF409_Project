@@ -24,18 +24,16 @@ import data.transfer.User;
 
 
 
-public class CustomerGui extends JFrame {
+public class CustomerInterface extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private User user;
 
 	/** all frames*/
 	private JOptionPane dialogFrame;
-	private CustomerGui cust;
 	private JFrame myBookingsWindow;
 	
 	private static ObjectOutputStream objectOut;
-	private static ObjectInputStream objectIn;
 		
 	/** Combo box */
 	protected JComboBox<String> comboBoxSearch;
@@ -73,16 +71,13 @@ public class CustomerGui extends JFrame {
 	/** This is the list of textAreas*/
 	protected JTextArea textArea;
 	protected JTextArea myTextArea;
-
-	public CustomerGui(Object o, ObjectOutputStream obOut, ObjectInputStream obIn, String user){
-		cust = new CustomerGui(user);
-	}
 	
-	public CustomerGui(Object o, String user){
-		cust = new CustomerGui(user);
-	}
-	
-	public CustomerGui(String title) {
+	/**
+	 * Construct a gui for a given username
+	 * @param title User's name
+	 */
+	public CustomerInterface(String title, ObjectOutputStream o) {
+		objectOut = o;
 		this.setTitle("Welcome " + title);
 		this.setBounds(325, 225, 725, 600);
 		this.setLayout(new GridLayout(2, 2));
@@ -92,8 +87,8 @@ public class CustomerGui extends JFrame {
 		this.add(botLeftPanel());
 		this.add(botRightPanel());
 		
-		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setVisible(true);
 	}
 
 	private JPanel topLeftPanel() {
@@ -308,7 +303,7 @@ public class CustomerGui extends JFrame {
 												 depTime.getText() + ","  + durationField.getText() + "," +
 												 totSeatsField.getText() + "," + remSeatsField.getText() + "," +
 												 priceField.getText()));
-						//TODO user should be field within each customergui window
+						//TODO user should be field within each CustomerInterface window
 						crc.setUser(user);
 						crc.setSeats(Integer.parseInt(remSeatsField.getText()));
 						objectOut.writeObject(crc);
@@ -421,7 +416,7 @@ public class CustomerGui extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		CustomerGui cust = new CustomerGui(null, objectOut, objectIn, "Test");
+		CustomerInterface cust = new CustomerInterface("Test", null);
 	}
 
 }
