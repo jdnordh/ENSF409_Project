@@ -1,6 +1,7 @@
 package client;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -17,18 +18,16 @@ import data.transfer.ServerOutputCom;
 import data.transfer.User;
 
 
-public class ClientGui extends JFrame{
-
+public class LoginWindow extends JFrame{
 	
+	/** This is just a pointer to itself */
+	private LoginWindow selfPointer;
 
 	private static final long serialVersionUID = 1L;
 	
 	private ObjectOutputStream objectOut;
-	private ObjectInputStream objectIn;
-//TODO null
+	
 	/** Frames */
-	protected static ClientGui gui;
-
 	protected static User user;
 	private JFrame loginWindow;
 	private JFrame newUserWindow;
@@ -63,34 +62,30 @@ public class ClientGui extends JFrame{
 
 	public AdminGui head;
 
-	public ClientGui(Object o, ObjectOutputStream obOut, ObjectInputStream obIn) {
-		gui = new ClientGui(obOut, obIn);
-	}
-	
-	public ClientGui(ObjectOutputStream obOut, ObjectInputStream obIn){
+	public LoginWindow(ObjectOutputStream obOut){
 		objectOut = obOut;
-		objectIn = obIn;
-		this.setTitle("Setup");
+		this.setTitle("Login");
 		this.setLayout(new GridLayout(2, 1));
 		this.setBounds(325, 225, 300, 115);
 		
 		this.add(createUpperPanel());
 		this.add(createCenterPanel());
 		
-		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		selfPointer = this;
+		this.setVisible(true);
 	}
 
 	private JPanel createUpperPanel() {
 		JPanel upperPanel = new JPanel();
-		chooseLogin.addActionListener(new ClientListener());
+		chooseLogin.addActionListener(new ClientListener(this));
 		upperPanel.add(chooseLogin);
 		return upperPanel;
 	}
 	
 	private JPanel createCenterPanel() {
 		JPanel centerPanel = new JPanel();
-		newUser.addActionListener(new ClientListener());
+		newUser.addActionListener(new ClientListener(this));
 		centerPanel.add(newUser);
 		return centerPanel;
 	}
@@ -121,10 +116,10 @@ public class ClientGui extends JFrame{
 		//south
 		JPanel lowerPanel = new JPanel();
 		login = new JButton("Login");
-		login.addActionListener(new ClientListener());
+		login.addActionListener(new ClientListener(this));
 		lowerPanel.add(login);
 		cancelLogin = new JButton("Cancel");
-		cancelLogin.addActionListener(new ClientListener());
+		cancelLogin.addActionListener(new ClientListener(this));
 		lowerPanel.add(cancelLogin);
 		loginWindow.add(lowerPanel);
 
@@ -216,10 +211,10 @@ public class ClientGui extends JFrame{
 		//row seven
 		JPanel rSeven = new JPanel();
 		createAccount = new JButton("Create Account");
-		createAccount.addActionListener(new ClientListener());
+		createAccount.addActionListener(new ClientListener(this));
 		rSeven.add(createAccount);
 		cancelCreation = new JButton("Cancel");
-		cancelCreation.addActionListener(new ClientListener());
+		cancelCreation.addActionListener(new ClientListener(this));
 		rSeven.add(cancelCreation);
 		newUserWindow.add(rSeven);
 
@@ -229,16 +224,22 @@ public class ClientGui extends JFrame{
 		
 	private class ClientListener implements ActionListener
 	{
-
+		private LoginWindow pointer;
+		
+		public ClientListener(LoginWindow w){
+			super();
+			pointer = w;
+		}
+		
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == chooseLogin) {
-				gui.dispose();
+				pointer.setVisible(false);
 				loginWindow();
 				System.out.println("Displaying login window...");
 			}
 			
 			else if (e.getSource() == newUser) {
-				gui.dispose();
+				pointer.setVisible(false);
 				newUserWindow();
 				System.out.println("Displaying create a new user window...");
 			}
@@ -264,7 +265,7 @@ public class ClientGui extends JFrame{
 			
 			else if(e.getSource() == cancelLogin) {
 				loginWindow.dispose();
-				gui = new ClientGui(objectOut, objectIn);
+				pointer.setVisible(true);
 			}
 			
 			else if(e.getSource() == createAccount) {
@@ -344,7 +345,7 @@ public class ClientGui extends JFrame{
 						if (response.type() == ComTypes.REGISTER_CONFIRM){
 							System.out.println("Account created...");
 							newUserWindow.dispose();
-							gui = new ClientGui(objectOut, objectIn);
+							gui = new LoginWindow(objectOut, objectIn);
 						}
 					} catch (ClassNotFoundException e1) {
 						System.out.println("123");
@@ -360,9 +361,18 @@ public class ClientGui extends JFrame{
 			else if(e.getSource() == cancelCreation) 
 			{
 				newUserWindow.dispose();
-				gui = new ClientGui(objectOut, objectIn);
+				pointer.setVisible(true);
 			}
 		}
+	}
+	
+	/**
+	 * Closes all associated windows
+	 */
+	public void close(){
+		if (newUserWindow != null) newUserWindow.dispose();
+		if (loginWindow != null) loginWindow.dispose();
+		this.dispose();
 	}
 	
 	public ObjectOutputStream getOut() {
@@ -372,11 +382,8 @@ public class ClientGui extends JFrame{
 	public void setOut(ObjectOutputStream out) {
 		this.objectOut = out;
 	}
-	
-	public static void main(String[] args){		
-		//gui = new ClientGui();
+	public static void main(String [] args){
+		LoginWindow win = new LoginWindow(null);
 	}
-
-
 	
 }

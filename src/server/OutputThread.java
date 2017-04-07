@@ -70,7 +70,7 @@ public class OutputThread extends Thread{
 							}
 							out.writeObject(response);
 							out.flush();
-							System.out.println("Output Thread "+ this.getName() + " wrote task type " + temp.getType() + " to stream");
+							System.out.println("Output Thread "+ this.getName() + " wrote server response " + response.type() + " to stream");
 						}
 						sleep(1);
 					}

@@ -46,6 +46,7 @@ public class Client {
 		Gui = new ClientGui(null, objectOut, objectIn);
 		System.out.println("Got connection: " + socket.toString());
 		in = new ClientInputThread(objectIn);
+		in.setClientGui(Gui);
 		in.start();
 		System.out.println("ClientInputThread running...");
 

@@ -2,6 +2,8 @@ package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import javax.swing.JOptionPane;
 
 import data.transfer.ComTypes;
@@ -10,17 +12,20 @@ import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.User;
 
-public class ClientInputThread extends Thread{
+public class ClientSideInputThread extends Thread{
 	private ObjectInputStream in;
-	private ClientGui clientGui;
-	private CustomerGui customerGui;
-	private AdminGui adminGui;
+	/** This is only used to add to the guis */
+	private ObjectOutputStream out;
+	private LoginWindow loginWindow;
+	private CustomerInterface customerGui;
+	private AdminInterface adminGui;
 	private User user;
 	
 	
-	public ClientInputThread(ObjectInputStream o){
+	public ClientSideInputThread(ObjectInputStream i, ObjectOutputStream o){
 		super("Input Thread");
-		in = o;
+		in = i;
+		out = o;
 	}
 	
 	//TODO must set user somewhere so that it can be used below
@@ -36,19 +41,19 @@ public class ClientInputThread extends Thread{
 					 user = response.getUser();
 					 //following is just so i can get in for other tests
 					 user = new User("Bob", "Smith", new Date(1, 1, 1));
-					 setCustomerGui(new CustomerGui(null, user.getFirstName())); 
-					 clientGui.dispose();
+					 setCustomerGui(new CustomerInterface(user.getFirstName(), out)); 
+					 loginWindow.close();
 					 //TODO dispose of window behind the new customergui???
 				 }
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
 					 user = response.getUser();
-					 setCustomerGui(new CustomerGui(null, user.getFirstName()));
-					 clientGui.dispose();
+					 setCustomerGui(new CustomerInterface(user.getFirstName(), out)); 
+					 loginWindow.close();
 				 }
 				 else if (response.type() == ComTypes.USER_CONFIRM_ADMIN){
 					 user = response.getUser();
-					 setAdminGui(new AdminGui(null, user.getFirstName()));
-					 clientGui.dispose();
+					 setCustomerGui(new CustomerInterface(user.getFirstName(), out)); 
+					 loginWindow.close();
 				 }
 				 else if (response.type() == ComTypes.FAILED_LOGIN){
 					JOptionPane.showMessageDialog(null, "Username/Password Incorrect.");
@@ -98,33 +103,24 @@ public class ClientInputThread extends Thread{
 	}
 
 	//Set and Get
-	public ClientGui getClientGui() {
-		return clientGui;
+	
+	public void setLoginWindow(LoginWindow w){
+		loginWindow = w;
 	}
 
-
-	public void setClientGui(ClientGui clientGui) {
-		this.clientGui = clientGui;
-	}
-
-
-	public CustomerGui getCustomerGui() {
+	public CustomerInterface getCustomerGui() {
 		return customerGui;
 	}
 
-
-	public void setCustomerGui(CustomerGui customerGui) {
+	public void setCustomerGui(CustomerInterface customerGui) {
 		this.customerGui = customerGui;
 	}
 
-
-	public AdminGui getAdminGui() {
+	public AdminInterface getAdminGui() {
 		return adminGui;
 	}
 
-
-	public void setAdminGui(AdminGui adminGui) {
+	public void setAdminGui(AdminInterface adminGui) {
 		this.adminGui = adminGui;
 	}
-	
 }
