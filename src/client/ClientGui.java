@@ -262,11 +262,8 @@ public class ClientGui extends JFrame{
 			}
 			
 			else if(e.getSource() == createAccount) {
-<<<<<<< HEAD
 				//TODO fix
-=======
 				System.out.println("Creating new account");
->>>>>>> dc03a7f533db491f8f84ee69dfb05b883468fe1b
 				String pass = new String(newUserPassword.getPassword());  //Use this string for password
 				String confirmPass = new String(confirmUserPassword.getPassword());  //Use this string for password
 
