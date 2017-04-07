@@ -323,8 +323,7 @@ public class CustomerInterface extends JFrame {
 					{
 						try {
 							ClientRequestCom crc = new ClientRequestCom(ComTypes.BOOK_FLIGHT);
-							Flight f = selectedFlight;
-							crc.setFlight(f);
+							crc.setFlight(selectedFlight);
 							crc.setUser(user);
 							crc.setSeats(1);	//TODO change when seatsToBook is fixed
 							objectOut.writeObject(crc);
@@ -369,6 +368,7 @@ public class CustomerInterface extends JFrame {
 			}
 			else if (e.getSource() == searchButton){
 				flightModel.clear();
+				if (searchFlights.getText().equals("")) JOptionPane.showMessageDialog(null, "Error: Empty search field");
 				if(comboBoxSearch.getSelectedItem().equals("Date(\"October 5 2017\")"))
 				{
 					try {
