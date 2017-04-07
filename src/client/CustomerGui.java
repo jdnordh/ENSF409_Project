@@ -1,21 +1,42 @@
 package client;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import data.transfer.ClientRequestCom;
+import data.transfer.ComTypes;
+import data.transfer.Flight;
+import data.transfer.ServerOutputCom;
+import data.transfer.User;
 
 
 
 public class CustomerGui extends JFrame {
 	private static final long serialVersionUID = 1L;
+	
+	private User user;
 
+	/** all frames*/
+	private JOptionPane dialogFrame;
 	private CustomerGui cust;
-
+	private JFrame myBookingsWindow;
+	
+	private static ObjectOutputStream objectOut;
+	private static ObjectInputStream objectIn;
+		
 	/** Combo box */
 	protected JComboBox<String> comboBoxSearch;
 	protected char comboBoxSelectionDay1;
@@ -39,17 +60,24 @@ public class CustomerGui extends JFrame {
 	private JButton myBookings;
 	private JButton bookFlight;
 	private JButton clearFlight;
+	private JButton printTicket;
+	private JButton cancelTicket;
+	private JButton returnToMain;
 
 	/** This is the list of clients */
-	protected JList<Client> display;
-	private DefaultListModel<Client> list;
+	protected JList<Flight> display;
+	private DefaultListModel<Flight> list;
+	protected JList<Flight> myDisplay;
+	private DefaultListModel<Flight> myList;
 	
+	/** This is the list of textAreas*/
 	protected JTextArea textArea;
+	protected JTextArea myTextArea;
 
-	public CustomerGui(Object o){
-		cust = new CustomerGui("Customer");
+	public CustomerGui(Object o, ObjectOutputStream obOut, ObjectInputStream obIn, String user){
+		cust = new CustomerGui(user);
 	}
-
+	
 	public CustomerGui(Object o, String user){
 		cust = new CustomerGui(user);
 	}
@@ -75,6 +103,7 @@ public class CustomerGui extends JFrame {
 		//row one
 		JPanel rOne = new JPanel();
 		myBookings = new JButton("My Bookings");
+		myBookings.addActionListener(new ClientListener());
 		rOne.add(myBookings);		
 		panel.add(rOne);
 		
@@ -82,7 +111,7 @@ public class CustomerGui extends JFrame {
 		JPanel rTwo = new JPanel();
 		rTwo.add(new JLabel("Search Flights by:"));
 		rTwo.add(Box.createRigidArea(new Dimension(10, 10)));
-		String [] temp1 = {"Date", "Source", "Destination"};
+		String [] temp1 = {"Date(\"October 5 2017\")", "Source", "Destination"};
 		comboBoxSearch = new JComboBox<String>(temp1);
 		comboBoxSearch.setEditable(false);
 		//comboBox.addActionListener(listen);
@@ -101,9 +130,11 @@ public class CustomerGui extends JFrame {
 		JPanel rFour = new JPanel();
 		rFour.add(Box.createRigidArea(new Dimension(10, 10)));
 		searchButton = new JButton("Search");
+		searchButton.addActionListener(new ClientListener());
 		rFour.add(searchButton);
 		rFour.add(Box.createRigidArea(new Dimension(10, 10)));
 		clearButton = new JButton("Clear");
+		clearButton.addActionListener(new ClientListener());
 		rFour.add(clearButton);
 		panel.add(rFour);
 
@@ -227,9 +258,11 @@ public class CustomerGui extends JFrame {
 		//row five
 		JPanel rFive = new JPanel();
 		bookFlight = new JButton("Book");
+		bookFlight.addActionListener(new ClientListener());
 		rFive.add(bookFlight);
 		rFive.add(Box.createRigidArea(new Dimension(10, 10)));
 		clearFlight = new JButton("Clear");
+		clearFlight.addActionListener(new ClientListener());
 		rFive.add(clearFlight);
 		panel.add(rFive);
 
@@ -241,8 +274,8 @@ public class CustomerGui extends JFrame {
 	private JPanel botLeftPanel() {
 		JPanel panel = new JPanel();
 		
-		list = new DefaultListModel<Client>();
-		display = new JList<Client>(list);
+		list = new DefaultListModel<Flight>();
+		display = new JList<Flight>(list);
 		display.setFont(new Font("Courier New", Font.BOLD, 12));
 		//display.addListSelectionListener(new ListAction());
 		display.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -261,23 +294,134 @@ public class CustomerGui extends JFrame {
 		return panel;
 	}
 
+	private class ClientListener implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == bookFlight) {
+				if(flightNumField.getText().equals(""))
+					JOptionPane.showMessageDialog(dialogFrame, "No Flight selected.");
+				else
+				{
+					try {
+						ClientRequestCom crc = new ClientRequestCom(ComTypes.BOOK_FLIGHT);
+						crc.setFlight(new Flight(flightNumField.getText() + "," + departureField.getText() + "," + 
+												 destField.getText() + "," + depDate.getText() + "," + 
+												 depTime.getText() + ","  + durationField.getText() + "," +
+												 totSeatsField.getText() + "," + remSeatsField.getText() + "," +
+												 priceField.getText()));
+						//TODO user should be field within each customergui window
+						crc.setUser(user);
+						crc.setSeats(Integer.parseInt(remSeatsField.getText()));
+						objectOut.writeObject(crc);
+						objectOut.flush();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			else if (e.getSource() == clearFlight) 
+			{
+				flightNumField.setText("");;
+				departureField.setText("");;
+				destField.setText("");
+				depDate.setText("");;
+				depTime.setText("");;
+				durationField.setText("");;
+				totSeatsField.setText("");;
+				remSeatsField.setText("");;
+				priceField.setText("");;
+			}
+			else if (e.getSource() == myBookings)
+			{
+				//TODO cust == null here but idk why
+				//cust.dispose();
+				myBookingsWindow();
+			}
+			else if (e.getSource() == searchButton){
+				if(comboBoxSearch.getSelectedItem().equals("Date(\"October 5 2017\")"))
+				{
+					//TODO search database and display flights on searched day
+				}
+				else if(comboBoxSearch.getSelectedItem().equals("Source"))
+				{
+					//TODO search database and display flights from source
+				}
+				else if(comboBoxSearch.getSelectedItem().equals("Destination"))
+				{
+					//TODO search database and display flights to dest
+				}
+			}
+			else if (e.getSource() == clearButton){
+				searchFlights.setText("");
+			}
+			
+			//TODO program buttons for myBookings window
+			
+		}
 
-	/*private class ListAction implements ListSelectionListener {
+		private void myBookingsWindow() {
+			myBookingsWindow = new JFrame();
+			myBookingsWindow.setTitle("New User");
+			myBookingsWindow.setBounds(325, 225, 450, 400);
+			
+			//top
+			JPanel top = new JPanel();
+			top.add(new JLabel("My tickets:"));
+			myBookingsWindow.add(top, BorderLayout.NORTH);
+
+			//center
+			JPanel center = new JPanel();
+			myList = new DefaultListModel<Flight>();
+			myDisplay = new JList<Flight>(myList);
+			myDisplay.setFont(new Font("Courier New", Font.BOLD, 12));
+			//display.addListSelectionListener(new ListAction());
+			myDisplay.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+			myDisplay.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+			myDisplay.setVisibleRowCount(-1);
+			JScrollPane textAreaScrollPane = new JScrollPane();
+			myTextArea = new JTextArea();
+			textAreaScrollPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+			myTextArea.setFont(new Font("Courier New", Font.BOLD, 12));
+			myTextArea.setEditable(false);
+			textAreaScrollPane = new JScrollPane(myDisplay);
+			textAreaScrollPane.setPreferredSize(new Dimension(325, 260));
+			center.add(textAreaScrollPane);
+			myBookingsWindow.add(center, BorderLayout.CENTER);
+			//TODO fill myticketlist with that users tickets 
+
+			//bot
+			JPanel bot = new JPanel();
+			printTicket = new JButton("Print Ticket");
+			bot.add(printTicket);
+			bot.add(Box.createRigidArea(new Dimension(5 ,10)));
+			cancelTicket = new JButton("Cancel Ticket");
+			bot.add(cancelTicket);
+			bot.add(Box.createRigidArea(new Dimension(5 ,10)));
+			returnToMain = new JButton("Return to main");
+			bot.add(returnToMain);
+			myBookingsWindow.add(bot, BorderLayout.SOUTH);
+			
+			myBookingsWindow.setVisible(true);
+			myBookingsWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		}
+		
+	}
+
+
+	private class ListAction implements ListSelectionListener {
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
-			
 			//client = ((JList<Client>)e.getSource()).getSelectedValue();
 			//client.displayInfo(clientIDIn, firstNameIn, lastNameIn, addressIn, postalIn, phoneNumIn, comboBox);
 			//dThread.setClient(client);
 		}
 
 		
-	}*/
+	}
 
 	public static void main(String[] args) {
-		CustomerGui g = new CustomerGui(null, "Test");
+		CustomerGui cust = new CustomerGui(null, objectOut, objectIn, "Test");
 	}
 
 }

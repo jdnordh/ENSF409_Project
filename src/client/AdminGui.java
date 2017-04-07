@@ -137,7 +137,7 @@ public class AdminGui extends JFrame{
 		browseWindow.add(panel, BorderLayout.SOUTH);
 
 		browseWindow.setVisible(true);
-
+		browseWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	public void addFlightWindow(){
@@ -229,7 +229,9 @@ public class AdminGui extends JFrame{
 		rNine.add(mainMenu);
 		addFlightWindow.add(rNine);
 		
+		
 		addFlightWindow.setVisible(true);
+		addFlightWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	public void addFlightFileWindow(){
@@ -255,6 +257,7 @@ public class AdminGui extends JFrame{
 		addFlightFileWindow.add(bottom, BorderLayout.SOUTH);
 		
 		addFlightFileWindow.setVisible(true);
+		addFlightFileWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	

@@ -6,15 +6,15 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import javax.swing.*;
-
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
 import data.transfer.Date;
+import data.transfer.ServerOutputCom;
 import data.transfer.User;
-
 
 
 public class ClientGui extends JFrame{
@@ -23,10 +23,13 @@ public class ClientGui extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	
-	private ObjectOutputStream out;
-
+	private ObjectOutputStream objectOut;
+	private ObjectInputStream objectIn;
+//TODO null
 	/** Frames */
-	static ClientGui g;
+	protected static ClientGui gui;
+
+	protected static User user;
 	private JFrame loginWindow;
 	private JFrame newUserWindow;
 	private JOptionPane dialogFrame;
@@ -60,8 +63,13 @@ public class ClientGui extends JFrame{
 
 	public AdminGui head;
 
+	public ClientGui(Object o, ObjectOutputStream obOut, ObjectInputStream obIn) {
+		gui = new ClientGui(obOut, obIn);
+	}
 	
-	public ClientGui(){
+	public ClientGui(ObjectOutputStream obOut, ObjectInputStream obIn){
+		objectOut = obOut;
+		objectIn = obIn;
 		this.setTitle("Setup");
 		this.setLayout(new GridLayout(2, 1));
 		this.setBounds(325, 225, 300, 115);
@@ -121,6 +129,7 @@ public class ClientGui extends JFrame{
 		loginWindow.add(lowerPanel);
 
 		loginWindow.setVisible(true);
+		loginWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	private void newUserWindow() {
@@ -128,7 +137,6 @@ public class ClientGui extends JFrame{
 		newUserWindow.setLayout(new GridLayout(7, 1));
 		newUserWindow.setTitle("New User");
 		newUserWindow.setBounds(325, 225, 450, 400);
-		newUserWindow.setVisible(true);
 		
 		//row one
 		JPanel rOne = new JPanel();
@@ -215,46 +223,57 @@ public class ClientGui extends JFrame{
 		rSeven.add(cancelCreation);
 		newUserWindow.add(rSeven);
 
+		newUserWindow.setVisible(true);
+		newUserWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		}
 		
 	private class ClientListener implements ActionListener
 	{
-		//TODO create ClientRequestCom
-		//TODO fill all required fields
-		//TODO put into ObjectOutputStream
-		//TODO flush stream
 
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == chooseLogin) {
-				g.dispose();
+				gui.dispose();
 				loginWindow();
+				System.out.println("Displaying login window...");
 			}
 			
 			else if (e.getSource() == newUser) {
-				g.dispose();
+				gui.dispose();
 				newUserWindow();
+				System.out.println("Displaying create a new user window...");
 			}
 			
 			else if(e.getSource() == login) {
-				// TODO create client request so server can handle logins
-				ClientRequestCom crc = new ClientRequestCom(ComTypes.LOG_IN);
+				String pass = new String(password.getPassword());
 				
-								
+				try {
+					ClientRequestCom crc = new ClientRequestCom(ComTypes.LOG_IN);
+					User u = new User();
+					u.setUsername(username.getText());
+					u.setPassword(pass);
+					crc.setUser(u);
+					objectOut.writeObject(crc);
+					objectOut.flush();
+					
+
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+
 			}
 			
 			else if(e.getSource() == cancelLogin) {
 				loginWindow.dispose();
-				g = new ClientGui();
+				gui = new ClientGui(objectOut, objectIn);
 			}
 			
 			else if(e.getSource() == createAccount) {
-				//TODO fix
 				System.out.println("Attempting to creating a new account");
 				
 				String pass = new String(newUserPassword.getPassword());
 				String confirmPass = new String(confirmUserPassword.getPassword());
 
-			
+				/**error checking of new user strings begins*/
 				if(newUserFN.getText().equals("") || newUserLN.getText().equals("") ||
 						newUserUN.getText().equals("") || pass.equals("") || 
 						confirmPass.equals(""))
@@ -267,38 +286,95 @@ public class ClientGui extends JFrame{
 					newUserPassword.setText("");
 					confirmUserPassword.setText("");
 				}
-				else if(comboBoxMonth.getSelectedItem().toString() == "2" && 
-						(comboBoxDay.getSelectedItem().toString() == "29" ||
-						 comboBoxDay.getSelectedItem().toString() == "30" ||
-						 comboBoxDay.getSelectedItem().toString() == "31"))
+				else if(comboBoxMonth.getSelectedItem().toString().equals("2")&& 
+						(comboBoxDay.getSelectedItem().toString().equals("29") ||
+						 comboBoxDay.getSelectedItem().toString().equals("30")  ||
+						 comboBoxDay.getSelectedItem().toString().equals("31")))
 				{
 					JOptionPane.showMessageDialog(dialogFrame, "Invalid Date entered.");
 				}
-				else
+				else if(comboBoxMonth.getSelectedItem().toString().equals("4")&& 
+						comboBoxDay.getSelectedItem().toString().equals("31"))
 				{
-					newUserWindow.dispose();
-					ClientRequestCom crc = new ClientRequestCom(ComTypes.REGISTER_USER);
-					crc.setUser(new User(newUserFN.getText(), newUserLN.getText(), newUserUN.getText(),
-								pass, new Date(Integer.parseInt(comboBoxDay.getSelectedItem().toString()),
-												Integer.parseInt(comboBoxMonth.getSelectedItem().toString()),
-												Integer.parseInt(comboBoxYear.getSelectedItem().toString()))));
+					JOptionPane.showMessageDialog(dialogFrame, "Invalid Date entered.");
+				}
+				else if(comboBoxMonth.getSelectedItem().toString().equals("6")&& 
+						comboBoxDay.getSelectedItem().toString().equals("31"))
+				{
+					JOptionPane.showMessageDialog(dialogFrame, "Invalid Date entered.");
+				}
+				else if(comboBoxMonth.getSelectedItem().toString().equals("9")&& 
+						comboBoxDay.getSelectedItem().toString().equals("31"))
+				{
+					JOptionPane.showMessageDialog(dialogFrame, "Invalid Date entered.");
+				}
+				else if(comboBoxMonth.getSelectedItem().toString().equals("11")&& 
+						comboBoxDay.getSelectedItem().toString().equals("31"))
+				{
+					JOptionPane.showMessageDialog(dialogFrame, "Invalid Date entered.");
+				}
+				/**error checking of new user strings ends*/
+				else	//passed all error checking
+				{
 					
-					g = new ClientGui();
+					
+					try {
+						ClientRequestCom crc = new ClientRequestCom(ComTypes.REGISTER_USER);
+						crc.setUser(new User(newUserFN.getText(), newUserLN.getText(), newUserUN.getText(),
+									pass, new Date(Integer.parseInt(comboBoxDay.getSelectedItem().toString()),
+													Integer.parseInt(comboBoxMonth.getSelectedItem().toString()),
+													Integer.parseInt(comboBoxYear.getSelectedItem().toString()))));
+						objectOut.writeObject(crc);						
+						objectOut.flush();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					
+					
+					//TODO Jordan, do you have a fix????
+					/*
+					Trying to make it so that if the register is confirm the newUserWindow is disposed
+					and it returns to the main menu where they can then log in. If the username is already
+					taken it should leave all their fields in tact and leave the newUserWindow visible.
+					*/
+					/*try {
+						ServerOutputCom response = (ServerOutputCom) objectIn.readObject();
+						if (response.type() == ComTypes.REGISTER_CONFIRM){
+							System.out.println("Account created...");
+							newUserWindow.dispose();
+							gui = new ClientGui(objectOut, objectIn);
+						}
+					} catch (ClassNotFoundException e1) {
+						System.out.println("123");
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						System.out.println("456");
+						e1.printStackTrace();
+					}*/
+				
 				}
 			}
 			
 			else if(e.getSource() == cancelCreation) 
 			{
 				newUserWindow.dispose();
-				g = new ClientGui();
+				gui = new ClientGui(objectOut, objectIn);
 			}
 		}
 	}
 	
-	public static void main(String[] args){
-		
-		int a = 1;
-		g = new ClientGui();
+	public ObjectOutputStream getOut() {
+		return objectOut;
 	}
+
+	public void setOut(ObjectOutputStream out) {
+		this.objectOut = out;
+	}
+	
+	public static void main(String[] args){		
+		//gui = new ClientGui();
+	}
+
+
 	
 }
