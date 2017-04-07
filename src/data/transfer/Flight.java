@@ -88,6 +88,29 @@ public class Flight implements Serializable{
 	public void seatIncrement(){
 		this.availableSeats++;
 	}
+	
+	/** send this to a string */
+	public String toString(){
+		String res = "";
+		res += Integer.toString(id);
+		res += ",";
+		res += this.source;
+		res += ",";
+		res += this.destination;
+		res += ",";
+		res += this.date.toString();
+		res += ",";
+		res += this.departureTime.toString();
+		res += ",";
+		res += Integer.toString(totalSeats);
+		res += ",";
+		res += Integer.toString(availableSeats);
+		res += ",";
+		res += Double.toString(price);
+		
+		return res;
+	}
+	
 	// Get and Set
 	public int getId() {
 		return id;

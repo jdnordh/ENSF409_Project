@@ -1,8 +1,6 @@
 package client;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -60,7 +58,6 @@ public class AdminInterface extends JFrame{
 	protected JTextArea textAreaf;
 	
 	/** editable text fields*/
-	private JTextField searchFlights;
 	private JTextField flightNumField;
 	private JTextField departureField;
 	private JTextField destField;
@@ -68,7 +65,6 @@ public class AdminInterface extends JFrame{
 	private JTextField depTime;
 	private JTextField durationField;
 	private JTextField totSeatsField;
-	private JTextField remSeatsField;
 	private JTextField priceField;
 	private JTextField fileName;
 	private ClientListener listen;
@@ -190,7 +186,7 @@ public class AdminInterface extends JFrame{
 	
 	public void ticketBrowseWindow(){
 		ticketBrowseWindow.setTitle("Browse Bookings");
-		ticketBrowseWindow.setBounds(325, 225, 400, 400);
+		ticketBrowseWindow.setBounds(325, 225, 500, 400);
 
 		ticketBrowseWindow.add(new JLabel("Bookings:"), BorderLayout.NORTH);
 		
@@ -207,7 +203,7 @@ public class AdminInterface extends JFrame{
 		textAreat.setFont(new Font("Courier New", Font.BOLD, 12));
 		textAreat.setEditable(false);
 		textAreaScrollPane = new JScrollPane(ticketList);
-		textAreaScrollPane.setPreferredSize(new Dimension(350, 300));
+		textAreaScrollPane.setPreferredSize(new Dimension(400, 300));
 		ticketBrowseWindow.add(textAreaScrollPane, BorderLayout.CENTER);
 		
 		JPanel panel = new JPanel();
@@ -222,7 +218,7 @@ public class AdminInterface extends JFrame{
 	
 	public void flightBrowseWindow(){
 		flightBrowseWindow.setTitle("Browse Flights");
-		flightBrowseWindow.setBounds(325, 225, 400, 400);
+		flightBrowseWindow.setBounds(325, 225, 500, 400);
 		
 		flightBrowseWindow.add(new JLabel("Flights:"), BorderLayout.NORTH);
 		
@@ -239,7 +235,7 @@ public class AdminInterface extends JFrame{
 		textAreaf.setFont(new Font("Courier New", Font.BOLD, 12));
 		textAreaf.setEditable(false);
 		textAreaScrollPane = new JScrollPane(flightList);
-		textAreaScrollPane.setPreferredSize(new Dimension(350, 300));
+		textAreaScrollPane.setPreferredSize(new Dimension(400, 300));
 		flightBrowseWindow.add(textAreaScrollPane, BorderLayout.CENTER);
 		
 		JPanel panel = new JPanel();
@@ -462,6 +458,7 @@ public class AdminInterface extends JFrame{
 				try {
 					out.writeObject(req);
 					out.flush();
+					ticketModel.removeElement(t);
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
 				}
@@ -474,6 +471,7 @@ public class AdminInterface extends JFrame{
 				try {
 					out.writeObject(req);
 					out.flush();
+					flightModel.removeElement(f);
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
 				}
