@@ -14,7 +14,7 @@ import java.util.Vector;
  * if it is a ticket search: query (use TICKET or ALL_TICKETS - see definitions), user
  * if it is a flight search: query (use FLIGHT or ALL_FLIGHTS - see definitions)
  * BOOK_FLIGHT: flight, user, seats
- * CANCEL_TICKET: user, ticket
+ * CANCEL_TICKET: ticket
  * 
  * --- The following types are admin only types, so user is inputed to check if the user is admin ---
  * ADD_FLIGHT: user, flight
@@ -35,12 +35,14 @@ public class ClientRequestCom extends ServerCom{
 	public static final int FLIGHT_BY_SOURCE = 1;
 	/** For searching for flights by the destination city */
 	public static final int FLIGHT_BY_DESTINATION = 2;
+	/** For searching for flights by the date */
+	public static final int FLIGHT_BY_DATE = 3;
 	/** Get all flights */
-	public static final int ALL_FLIGHTS = 3;
+	public static final int ALL_FLIGHTS = 4;
 	/** For searching for tickets belonging to the given user */
-	public static final int TICKET = 4;
+	public static final int TICKET = 5;
 	/** Get all tickets, ADMIN ONLY */
-	public static final int ALL_TICKETS = 5;
+	public static final int ALL_TICKETS = 6;
 	/** The following fields are not always used, depending on the type of request */
 	
 	/** The user executing the request */
@@ -59,6 +61,7 @@ public class ClientRequestCom extends ServerCom{
 	private Ticket ticket;
 	/** amount of seats wanting to be booked */
 	private int seats;
+	private Date date;
 	
 	/**
 	 * Construct a client request of type t
@@ -130,6 +133,14 @@ public class ClientRequestCom extends ServerCom{
 
 	public void setMultiple_flights(Vector<Flight> multiple_flights) {
 		this.multiple_flights = multiple_flights;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 }

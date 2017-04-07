@@ -283,17 +283,18 @@ public class AdminGui extends JFrame{
 				if(browseWindow != null)
 				{
 					browseWindow.dispose();
-					a = new AdminGui();
+					//a = new AdminGui();
+					//TODO fix these commented lines
 				}
 				else if(addFlightWindow != null)
 				{
 					addFlightWindow.dispose();
-					a = new AdminGui();
+					//a = new AdminGui();
 				}
 				else if(addFlightFileWindow != null)
 				{
 					addFlightFileWindow.dispose();
-					a = new AdminGui();
+					//a = new AdminGui();
 				}
 				
 			}
