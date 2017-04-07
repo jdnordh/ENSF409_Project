@@ -76,6 +76,20 @@ public class ClientTemp {
 				System.out.println("Type: " + response.type());
 			}
 			
+			req = new ClientRequestCom(ComTypes.QUERY);
+			req.setQuery(ClientRequestCom.ALL_FLIGHTS);
+			objectOut.writeObject(req);
+			objectOut.flush();
+			
+			response = (ServerOutputCom) objectIn.readObject();
+			if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+				for (int i = 0; i < response.getFlights().size(); i++){
+					System.out.println("Destination: " + response.getFlights().get(i).getDestination());
+				}
+			}
+			else {
+				System.out.println("Type: " + response.type());
+			}
 			
 			//in.join();
 		}// catch (InterruptedException e1) {

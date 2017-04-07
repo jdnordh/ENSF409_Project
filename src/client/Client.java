@@ -104,7 +104,7 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws IOException  {
-		Client a = new Client("192.168.1.31", 6000);
+		Client a = new Client("70.77.96.98", 6000);
 		a.communicate();
 	}
 }
