@@ -16,7 +16,7 @@ import data.transfer.User;
 public class Client {
 	private Socket socket;
 	private ObjectInputStream objectIn;
-	private ObjectOutputStream objectOut;
+	protected ObjectOutputStream objectOut;
 	private ClientInputThread in;
 	private ClientGui Gui;
 	
@@ -42,38 +42,15 @@ public class Client {
 	 * Client will quit from either server telling it to, or the client telling it to
 	 */
 	public void communicate()  {
-		System.out.println("Starting...");
+		System.out.println("Starting...");		
+		Gui = new ClientGui(null, objectOut, objectIn);
 		System.out.println("Got connection: " + socket.toString());
-		//in = new ClientInputThread(objectIn);
-		//in.start();
+		in = new ClientInputThread(objectIn);
+		in.start();
+		System.out.println("ClientInputThread running...");
+
 			
-		Gui = new ClientGui();
-		Gui.setVisible(true);
-		try {
-			User u = new User();
-			u.setUsername("user");
-			u.setPassword("password");
-			ClientRequestCom req = new ClientRequestCom(ComTypes.LOG_IN);
-			req.setUser(u);
-			System.out.println("Writting to stream...");
-			objectOut.writeObject(req);
-			objectOut.flush();
-			System.out.println("Waiting for server...");
-			
-			ServerOutputCom response = (ServerOutputCom) objectIn.readObject();
-			if (response.type() == ComTypes.USER_CONFIRM){
-				System.out.println("Logged in");
-			}
-			else {
-				System.out.println("Type: " + response.type());
-			}
-			
-			req = new ClientRequestCom(ComTypes.QUERY);
-			req.setQuery(ClientRequestCom.ALL_FLIGHTS);
-			objectOut.writeObject(req);
-			objectOut.flush();
-			
-			response = (ServerOutputCom) objectIn.readObject();
+			/*response = (ServerOutputCom) objectIn.readObject();
 			if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
 				for (int i = 0; i < response.getFlights().size(); i++){
 					System.out.println("Destination: " + response.getFlights().get(i).getDestination());
@@ -81,24 +58,21 @@ public class Client {
 			}
 			else {
 				System.out.println("Type: " + response.type());
-			}
+			}*/
 			
-			//in.join();
-		}// catch (InterruptedException e1) {
-			//e1.printStackTrace();
-		//} 
-		catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		try {
+			in.join();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
 		System.out.println("Closing...");
 		try {
 			objectIn.close();
 			objectOut.close();
 			socket.close();
-		} catch (IOException e) {
-			System.out.println("Closing error: " + e.getMessage());
+		} catch (IOException e3) {
+			System.out.println("Closing error: " + e3.getMessage());
 		}
 		System.out.println("BYE");
 	}

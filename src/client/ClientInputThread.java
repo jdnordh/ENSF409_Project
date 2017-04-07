@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import javax.swing.JOptionPane;
 
 import data.transfer.ComTypes;
+import data.transfer.Date;
 import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.User;
@@ -16,10 +17,13 @@ public class ClientInputThread extends Thread{
 	private AdminGui adminGui;
 	private User user;
 	
+	
 	public ClientInputThread(ObjectInputStream o){
 		super("Input Thread");
 		in = o;
 	}
+	
+	//TODO must set user somewhere so that it can be used below
 	
 	
 	public void run(){
@@ -29,8 +33,11 @@ public class ClientInputThread extends Thread{
 				 ServerOutputCom response = (ServerOutputCom) in.readObject();
 				
 				 if (response.type() == ComTypes.USER_CONFIRM){
-					 user = response.getUser();
+					 //user = response.getUser();
+					 //following is just so i can get in for other tests
+					 user = new User("Bob", "Smith", new Date(1, 1, 1));
 					 setCustomerGui(new CustomerGui(null, user.getFirstName())); 
+					 //TODO dispose of window behind the new customergui???
 				 }
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
 					 user = response.getUser();
