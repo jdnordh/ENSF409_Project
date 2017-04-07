@@ -53,6 +53,9 @@ public class Database {
 			ResultSet result = statement.executeQuery("SELECT * FROM users WHERE username = '" + user.getUsername() + "'");
 			while (result.next()){
 				String p = result.getString(3);
+				user.setFirstName(result.getString(4));
+				user.setLastName(result.getString(5));
+				user.setBirthday(new Date(result.getString(6)));
 				int admin = result.getInt(7);
 				if (admin == 1 && p.equals(user.getPassword())) {
 					user.setAdmin(true);

@@ -21,7 +21,7 @@ public class Client {
 	private ClientGui Gui;
 	
 	/**
-	 * Construct a GameClient
+	 * Construct a Client
 	 * @param serverName Server name
 	 * @param portNumber port number
 	 */

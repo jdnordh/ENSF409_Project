@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import javax.swing.JOptionPane;
 
 import data.transfer.ComTypes;
+import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.User;
 

@@ -137,4 +137,9 @@ public class InputThread extends Thread{
 	protected void setAdmin(boolean b){
 		isAdmin = b;
 	}
+	
+	/** Set the user */
+	protected void setUser(User u){
+		user = u;
+	}
 }
