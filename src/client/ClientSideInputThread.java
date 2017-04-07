@@ -30,8 +30,6 @@ public class ClientSideInputThread extends Thread{
 		out = o;
 	}
 	
-	//TODO must set user somewhere so that it can be used below
-	
 	
 	public void run(){
 		boolean running = true;
@@ -47,7 +45,7 @@ public class ClientSideInputThread extends Thread{
 						 setAdminGui(c);
 					 }
 					 else {
-						 CustomerInterface c = new CustomerInterface(user.getUsername(), out);
+						 CustomerInterface c = new CustomerInterface(user, out);
 						 c.setVisible(true);
 						 setCustomerGui(c); 
 						 setAdminGui(null);
@@ -56,7 +54,7 @@ public class ClientSideInputThread extends Thread{
 				 }
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
 					 user = loginWindow.getUser();
-					 CustomerInterface c = new CustomerInterface(user.getUsername(), out);
+					 CustomerInterface c = new CustomerInterface(user, out);
 					 c.setVisible(true);
 					 setCustomerGui(c);  
 					 setAdminGui(null);
@@ -79,7 +77,6 @@ public class ClientSideInputThread extends Thread{
 					 JOptionPane.showMessageDialog(null, "Bad client request");
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 //TODO  add vector of flights to a list
 					 Vector<Flight> f = response.getFlights();
 					 for (int i = 0; i < f.size(); i++){
 						 if (adminGui != null){
@@ -91,7 +88,6 @@ public class ClientSideInputThread extends Thread{
 					 }
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_TICKET){
-					//TODO  add vector of tickets to a list
 					 Vector<Ticket> t = response.getTickets();
 					 for (int i = 0; i < t.size(); i++){
 						 if (adminGui != null){

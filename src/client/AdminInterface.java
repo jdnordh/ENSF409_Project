@@ -7,8 +7,13 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.time.LocalDateTime;
+import java.util.Vector;
 
 import javax.swing.*;
 
@@ -117,21 +122,7 @@ public class AdminInterface extends JFrame{
 		deleteFlightButton.addActionListener(listen);
 		addFlightFileButton.addActionListener(listen);
 		clearAllFields.addActionListener(listen);
-		
-		/* 	private JButton browse;
-	private JButton addFlight;
-	private JButton addFlightFile;
-	private JButton cancelBooking;
-	private JButton addFlightButton;
-	private JButton cancelFlightsButton;
-	private JButton deleteFlightButton;
-	private JButton mainMenu1;
-	private JButton mainMenu2;
-	private JButton mainMenu3;
-	private JButton mainMenu4;
-	private JButton addFlightFileButton;
-	*/
-		
+
 		this.add(top());
 		this.add(basement());
 		this.add(center());
@@ -450,6 +441,56 @@ public class AdminInterface extends JFrame{
 				}
 				
 			}
+			else if (e.getSource() == addFlightFileButton){
+				System.out.println("Getting flights from file");
+				String file = fileName.getText();
+				String input;
+				BufferedReader in;
+				Vector<Flight> flights = new Vector<Flight>();
+				try {
+					int dates = 0;
+					in = new BufferedReader(new FileReader(file));
+					while ((input = in.readLine()) != null){
+						Flight temp = new Flight(input);
+						LocalDateTime now = LocalDateTime.now();
+						Date date = temp.getDate();
+						try {
+						if (date.getYear() < now.getYear()) throw new ClassNotFoundException();
+						if (date.getYear() == now.getYear()){
+							if (date.getMonth() < now.getMonthValue()) throw new ClassNotFoundException();
+							if (date.getMonth() == now.getMonthValue()){
+								if (date.getDay() < now.getDayOfMonth()) throw new ClassNotFoundException();
+								if (date.getDay() == now.getDayOfMonth()){
+									if (temp.getDepartureTime().getHours() < now.getHour()) throw new ClassNotFoundException();
+									if (temp.getDepartureTime().getHours() == now.getHour()){
+										if (temp.getDepartureTime().getMinutes() < now.getMinute()) throw new ClassNotFoundException();
+									}
+								}
+							}
+						}
+						flights.add(temp);
+						} catch (ClassNotFoundException e1){
+							dates++;
+						}
+					}
+					if (dates > 0) JOptionPane.showMessageDialog(null, "Error: " + dates + " dates were invalid");
+					in.close();
+					ClientRequestCom req = new ClientRequestCom(ComTypes.ADD_MULTIPLE_FLIGHTS);
+					req.setMultiple_flights(flights);
+					req.setUser(user);
+					try {
+						out.writeObject(req);
+						out.flush();
+					} catch (IOException e1) {
+						JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+					}
+					
+				} catch (FileNotFoundException e1) {
+					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+				}
+			}
 			else if (e.getSource() == cancelBooking){
 				ClientRequestCom req = new ClientRequestCom(ComTypes.CANCEL_TICKET);
 				Ticket t = ticketList.getSelectedValue();
@@ -589,32 +630,15 @@ public class AdminInterface extends JFrame{
 				} catch (NullPointerException e2){
 					e2.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Error: " + e2.getMessage());
+				} catch (NumberFormatException e2){
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error: " + e2.getMessage());
 				}
 			}
 			
 		}
 	}
 
-	/*
-	 * private JTextField searchFlights;
-	private JTextField flightNumField;
-	private JTextField departureField;
-	private JTextField destField;
-	private JTextField depDate;
-	private JTextField depTime;
-	private JTextField durationField;
-	private JTextField totSeatsField;
-	private JTextField remSeatsField;
-	private JTextField priceField;
-	private JTextField fileName;
-	 */
-	
-	public static void main(String[] args) {
-		User user = new User("Billy", "Bob",new Date(1,1,1));
-		
-		AdminInterface a = new AdminInterface(user, null);
-	}
-	
 	public DefaultListModel<Flight> getFlightList(){
 		return this.flightModel;
 	}

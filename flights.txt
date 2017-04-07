@@ -1,0 +1,20 @@
+768375,Torrance,Anaheim,4:06,2:01,November 7,285,285,257
+247244,Seaside,Oxnard,8:56,3:15,November 10,59,59,534
+454399,Gainesville,Jackson,10:28,1:16,August 21,83,83,329
+186661,Laredo,Yakima,11:28,3:10,June 8,174,174,419
+492704,Santa Rosa,Orange,12:01,4:47,September 21,73,73,521
+147592,McAllen,Youngstown,20:12,0:39,June 2,340,340,362
+160128,Thousand Oaks,Fresno,11:18,4:37,July 1,270,270,551
+652845,Colorado Springs,Muskegon,5:10,2:09,December 28,402,402,259
+497664,Flint,Plano,7:56,0:46,June 25,401,401,518
+484027,Saint Paul,Gilbert,17:38,1:32,September 2,209,209,112
+920089,Scottsdale,Stamford,9:05,3:40,November 4,397,397,548
+102949,Tacoma,Pembroke Pines,2:56,3:20,July 11,127,127,325
+934833,Elizabeth,Antioch,21:47,4:30,December 8,73,73,157
+859733,Chicago,Mesa,1:19,3:01,July 6,305,305,358
+536168,Yakima,Chula Vista,16:22,5:52,September 2,291,291,455
+905123,Fresno,Corpus Christi,12:38,1:54,July 14,66,66,327
+749033,Chattanooga,Detroit,13:45,4:50,May 2,79,79,502
+819833,Daly City,Greensboro,4:12,4:21,September 14,102,102,222
+786986,Howell,Mesa,11:12,5:55,November 24,227,227,547
+855599,North Port,Visalia,3:13,4:08,August 30,197,197,386

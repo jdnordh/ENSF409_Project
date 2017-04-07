@@ -57,8 +57,6 @@ public class LoginWindow extends JFrame{
 	private JPasswordField newUserPassword;
 	private JPasswordField confirmUserPassword;
 
-	public AdminGui head;
-
 	public LoginWindow(ObjectOutputStream obOut){
 		objectOut = obOut;
 		this.setTitle("Login");
@@ -127,7 +125,7 @@ public class LoginWindow extends JFrame{
 		newUserWindow = new JFrame();
 		newUserWindow.setLayout(new GridLayout(7, 1));
 		newUserWindow.setTitle("New User");
-		newUserWindow.setBounds(325, 225, 450, 400);
+		newUserWindow.setBounds(325, 225, 500, 500);
 		
 		//row one
 		JPanel rOne = new JPanel();
@@ -239,7 +237,24 @@ public class LoginWindow extends JFrame{
 				newUserWindow();
 				System.out.println("Displaying create a new user window...");
 			}
-			
+			else if(e.getSource() == password) {
+				String pass = new String(password.getPassword());
+				
+				try {
+					ClientRequestCom crc = new ClientRequestCom(ComTypes.LOG_IN);
+					User u = new User();
+					u.setUsername(username.getText());
+					u.setPassword(pass);
+					crc.setUser(u);
+					user = u;
+					objectOut.writeObject(crc);
+					objectOut.flush();
+					
+
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
 			else if(e.getSource() == login) {
 				String pass = new String(password.getPassword());
 				

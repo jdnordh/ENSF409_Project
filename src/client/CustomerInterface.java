@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.DecimalFormat;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -18,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
+import data.transfer.Date;
 import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.Ticket;
@@ -29,7 +31,7 @@ public class CustomerInterface extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private User user;
-
+	private Flight selectedFlight;
 	/** all frames*/
 	private JOptionPane dialogFrame;
 	private JFrame myBookingsWindow;
@@ -51,7 +53,7 @@ public class CustomerInterface extends JFrame {
 	private JTextField totSeatsField;
 	private JTextField remSeatsField;
 	private JTextField priceField;
-
+	private JTextField seatsToBook;
 	
 	/**buttons */
 	private JButton searchButton;
@@ -62,7 +64,8 @@ public class CustomerInterface extends JFrame {
 	private JButton printTicket;
 	private JButton cancelTicket;
 	private JButton returnToMain;
-
+	private JButton browseFlights;
+	
 	/** This is the list of clients */
 	protected JList<Flight> flightList;
 	private DefaultListModel<Flight> flightModel;
@@ -75,13 +78,16 @@ public class CustomerInterface extends JFrame {
 	
 	/**
 	 * Construct a gui for a given username
-	 * @param title User's name
+	 * @param u User
 	 */
-	public CustomerInterface(String title, ObjectOutputStream o) {
+	public CustomerInterface(User u, ObjectOutputStream o) {
 		objectOut = o;
-		this.setTitle("Welcome " + title);
-		this.setBounds(325, 225, 725, 600);
+		user = u;
+		this.setTitle("Welcome " + user.getUsername());
+		this.setBounds(325, 225, 800, 600);
 		this.setLayout(new GridLayout(2, 2));
+		
+		myBookingsWindow();
 		
 		this.add(topLeftPanel());
 		this.add(topRightPanel());
@@ -94,7 +100,7 @@ public class CustomerInterface extends JFrame {
 
 	private JPanel topLeftPanel() {
 		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(4, 1));
+		panel.setLayout(new GridLayout(5, 1));
 		
 		//row one
 		JPanel rOne = new JPanel();
@@ -105,34 +111,41 @@ public class CustomerInterface extends JFrame {
 		
 		//row two
 		JPanel rTwo = new JPanel();
-		rTwo.add(new JLabel("Search Flights by:"));
-		rTwo.add(Box.createRigidArea(new Dimension(10, 10)));
+		browseFlights = new JButton("Browse all flights");
+		browseFlights.addActionListener(new ClientListener());
+		rTwo.add(browseFlights);		
+		panel.add(rTwo);
+		
+		//row three
+		JPanel rThree = new JPanel();
+		rThree.add(new JLabel("Search Flights by:"));
+		rThree.add(Box.createRigidArea(new Dimension(10, 10)));
 		String [] temp1 = {"Date(\"October 5 2017\")", "Source", "Destination"};
 		comboBoxSearch = new JComboBox<String>(temp1);
 		comboBoxSearch.setEditable(false);
 		//comboBox.addActionListener(listen);
-		rTwo.add(comboBoxSearch);
-		panel.add(rTwo);
-		
-		//row two
-		JPanel rThree = new JPanel();
-		rThree.add(new JLabel("Search:"));
-		rThree.add(Box.createRigidArea(new Dimension(10, 10)));
-		searchFlights = new JTextField(20);
-		rThree.add(searchFlights);
+		rThree.add(comboBoxSearch);
 		panel.add(rThree);
 		
-		//row three
+		//row four
 		JPanel rFour = new JPanel();
+		rFour.add(new JLabel("Search:"));
 		rFour.add(Box.createRigidArea(new Dimension(10, 10)));
+		searchFlights = new JTextField(20);
+		rFour.add(searchFlights);
+		panel.add(rFour);
+		
+		//row five
+		JPanel rFive = new JPanel();
+		rFive.add(Box.createRigidArea(new Dimension(10, 10)));
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ClientListener());
-		rFour.add(searchButton);
-		rFour.add(Box.createRigidArea(new Dimension(10, 10)));
+		rFive.add(searchButton);
+		rFive.add(Box.createRigidArea(new Dimension(10, 10)));
 		clearButton = new JButton("Clear");
 		clearButton.addActionListener(new ClientListener());
-		rFour.add(clearButton);
-		panel.add(rFour);
+		rFive.add(clearButton);
+		panel.add(rFive);
 
 		panel.setBorder(BorderFactory.createLineBorder(Color.black));
 		return panel;
@@ -145,17 +158,6 @@ public class CustomerInterface extends JFrame {
 		panel.setLayout(new GridLayout(5, 1));
 		
 		//row one
-		JPanel rOne = new JPanel();
-		rOne.add(new JLabel("Flight Number:"));
-		rOne.add(Box.createRigidArea(new Dimension(5, 10)));
-		flightNumField = new JTextField(20);
-		flightNumField.setEditable(false);
-		flightNumField.setBackground(Color.white);
-		rOne.add(flightNumField);
-		rOne.add(Box.createRigidArea(new Dimension(10, 10)));
-		panel.add(rOne);
-		
-		//row two
 		JPanel rTwo = new JPanel();
 		rTwo.add(new JLabel("Departs From:"));
 		rTwo.add(Box.createRigidArea(new Dimension(5, 10)));
@@ -166,7 +168,7 @@ public class CustomerInterface extends JFrame {
 		rTwo.add(Box.createRigidArea(new Dimension(10, 10)));
 		panel.add(rTwo);
 		
-		//row three
+		//row two
 		JPanel rThree = new JPanel();
 		rThree.add(new JLabel("Destination:"));
 		rThree.add(Box.createRigidArea(new Dimension(5, 10)));
@@ -177,7 +179,7 @@ public class CustomerInterface extends JFrame {
 		rThree.add(Box.createRigidArea(new Dimension(10, 10)));
 		panel.add(rThree);
 		
-		//row four
+		//row three
 		JPanel rFour = new JPanel();
 		rFour.add(new JLabel("Departure Date:"));
 		rFour.add(Box.createRigidArea(new Dimension(5, 10)));
@@ -188,7 +190,7 @@ public class CustomerInterface extends JFrame {
 		rFour.add(Box.createRigidArea(new Dimension(10, 10)));
 		panel.add(rFour);
 		
-		//row five
+		//row four
 		JPanel rFive = new JPanel();
 		rFive.add(new JLabel("Departure Time:"));
 		rFive.add(Box.createRigidArea(new Dimension(5, 10)));
@@ -199,15 +201,7 @@ public class CustomerInterface extends JFrame {
 		rFive.add(Box.createRigidArea(new Dimension(10, 10)));
 		panel.add(rFive);
 		
-		return panel;
-	}
-
-
-	private JPanel botRightPanel() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(5, 1));
-		
-		//row one
+		//row five
 		JPanel rOne = new JPanel();
 		rOne.add(new JLabel("Flight Duration:"));
 		rOne.add(Box.createRigidArea(new Dimension(5, 10)));
@@ -217,6 +211,14 @@ public class CustomerInterface extends JFrame {
 		rOne.add(durationField);
 		rOne.add(Box.createRigidArea(new Dimension(10, 10)));
 		panel.add(rOne);
+		
+		return panel;
+	}
+
+
+	private JPanel botRightPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(5, 1));
 		
 		//row two
 		JPanel rTwo = new JPanel();
@@ -251,6 +253,20 @@ public class CustomerInterface extends JFrame {
 		rFour.add(Box.createRigidArea(new Dimension(10, 10)));
 		panel.add(rFour);
 		
+		//row 6
+		
+		JPanel rSix = new JPanel();
+		rSix.add(new JLabel("Seats to Book:"));
+		rSix.add(Box.createRigidArea(new Dimension(5, 10)));
+		seatsToBook = new JTextField(20);
+		seatsToBook.setEditable(false);
+		seatsToBook.setBackground(Color.white);
+		seatsToBook.setText("1");
+		seatsToBook.setToolTipText("You can only book one seat at the moment");
+		rSix.add(seatsToBook);
+		rSix.add(Box.createRigidArea(new Dimension(10, 10)));
+		panel.add(rSix);
+		
 		//row five
 		JPanel rFive = new JPanel();
 		bookFlight = new JButton("Book");
@@ -261,7 +277,8 @@ public class CustomerInterface extends JFrame {
 		clearFlight.addActionListener(new ClientListener());
 		rFive.add(clearFlight);
 		panel.add(rFive);
-
+		
+		
 		
 		return panel;
 	}
@@ -272,6 +289,7 @@ public class CustomerInterface extends JFrame {
 		
 		flightModel = new DefaultListModel<Flight>();
 		flightList = new JList<Flight>(flightModel);
+		flightList.addListSelectionListener(new ListAction());
 		flightList.setFont(new Font("Courier New", Font.BOLD, 12));
 		//flightList.addListSelectionListener(new ListAction());
 		flightList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -283,7 +301,7 @@ public class CustomerInterface extends JFrame {
 		textArea.setFont(new Font("Courier New", Font.BOLD, 12));
 		textArea.setEditable(false);
 		textAreaScrollPane = new JScrollPane(flightList);
-		textAreaScrollPane.setPreferredSize(new Dimension(325, 260));
+		textAreaScrollPane.setPreferredSize(new Dimension(400, 260));
 		panel.add(textAreaScrollPane);
 
 		panel.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -291,133 +309,214 @@ public class CustomerInterface extends JFrame {
 	}
 
 	private class ClientListener implements ActionListener{
+		
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == bookFlight) {
-				if(flightNumField.getText().equals(""))
-					JOptionPane.showMessageDialog(dialogFrame, "No Flight selected.");
-				else
-				{
-					try {
-						ClientRequestCom crc = new ClientRequestCom(ComTypes.BOOK_FLIGHT);
-						crc.setFlight(new Flight(flightNumField.getText() + "," + departureField.getText() + "," + 
-												 destField.getText() + "," + depDate.getText() + "," + 
-												 depTime.getText() + ","  + durationField.getText() + "," +
-												 totSeatsField.getText() + "," + remSeatsField.getText() + "," +
-												 priceField.getText()));
-						//TODO user should be field within each CustomerInterface window
-						crc.setUser(user);
-						crc.setSeats(Integer.parseInt(remSeatsField.getText()));
-						objectOut.writeObject(crc);
-						objectOut.flush();
-					} catch (IOException e1) {
-						e1.printStackTrace();
+				try {
+					System.out.println(selectedFlight.toString());
+					if(departureField.getText().equals(""))
+						JOptionPane.showMessageDialog(dialogFrame, "No Flight selected.");
+					else if (seatsToBook.getText().equals("")) 
+						JOptionPane.showMessageDialog(dialogFrame, "Error: Seats to book not filled");
+					else
+					{
+						try {
+							ClientRequestCom crc = new ClientRequestCom(ComTypes.BOOK_FLIGHT);
+							Flight f = selectedFlight;
+							crc.setFlight(f);
+							crc.setUser(user);
+							crc.setSeats(Integer.parseInt(seatsToBook.getText()));
+							objectOut.writeObject(crc);
+							objectOut.flush();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						} catch (Exception e1){
+							JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+						}
 					}
+				} catch (Exception e1){
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
 				}
 			}
 			else if (e.getSource() == clearFlight) 
 			{
-				flightNumField.setText("");;
-				departureField.setText("");;
+				departureField.setText("");
 				destField.setText("");
-				depDate.setText("");;
-				depTime.setText("");;
-				durationField.setText("");;
-				totSeatsField.setText("");;
-				remSeatsField.setText("");;
-				priceField.setText("");;
+				depDate.setText("");
+				depTime.setText("");
+				durationField.setText("");
+				totSeatsField.setText("");
+				remSeatsField.setText("");
+				priceField.setText("");
 			}
 			else if (e.getSource() == myBookings)
 			{
-				//TODO cust == null here but idk why
-				//cust.dispose();
-				myBookingsWindow();
+				myBookingsWindow.setVisible(true);
+				
+				try {
+					ClientRequestCom crc = new ClientRequestCom(ComTypes.QUERY);
+					crc.setUser(user);
+					crc.setQuery(ClientRequestCom.TICKET);
+					objectOut.writeObject(crc);
+					objectOut.flush();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (Exception e1){
+					e1.printStackTrace();
+				}
 			}
 			else if (e.getSource() == searchButton){
+				flightModel.clear();
 				if(comboBoxSearch.getSelectedItem().equals("Date(\"October 5 2017\")"))
 				{
-					//TODO search database and flightList flights on searched day
+					try {
+						ClientRequestCom crc = new ClientRequestCom(ComTypes.QUERY);
+						crc.setUser(user);
+						crc.setQuery(ClientRequestCom.FLIGHT_BY_DATE);
+						crc.setDate(new Date(searchFlights.getText()));
+						objectOut.writeObject(crc);
+						objectOut.flush();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					} catch (Exception e1){
+						e1.printStackTrace();
+					}
 				}
 				else if(comboBoxSearch.getSelectedItem().equals("Source"))
 				{
-					//TODO search database and flightList flights from source
+					try {
+						ClientRequestCom crc = new ClientRequestCom(ComTypes.QUERY);
+						crc.setUser(user);
+						crc.setSearch(searchFlights.getText());
+						crc.setQuery(ClientRequestCom.FLIGHT_BY_SOURCE);
+						objectOut.writeObject(crc);
+						objectOut.flush();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					} catch (Exception e1){
+						e1.printStackTrace();
+					}
 				}
 				else if(comboBoxSearch.getSelectedItem().equals("Destination"))
 				{
-					//TODO search database and flightList flights to dest
+					try {
+						ClientRequestCom crc = new ClientRequestCom(ComTypes.QUERY);
+						crc.setUser(user);
+						crc.setSearch(searchFlights.getText());
+						crc.setQuery(ClientRequestCom.FLIGHT_BY_DESTINATION);
+						objectOut.writeObject(crc);
+						objectOut.flush();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					} catch (Exception e1){
+						e1.printStackTrace();
+					}
 				}
 			}
 			else if (e.getSource() == clearButton){
 				searchFlights.setText("");
+				flightModel.clear();
+			}
+			else if (e.getSource() == printTicket){
+				//TODO print ticket to text file
+			}
+			else if (e.getSource() == cancelTicket){
+				//TODO
+			}
+			else if (e.getSource() == returnToMain){
+				myBookingsWindow.setVisible(false);
+			}
+			else if (e.getSource() == browseFlights){
+				flightModel.clear();
+				try {
+					ClientRequestCom req = new ClientRequestCom(ComTypes.QUERY);
+					req.setQuery(ClientRequestCom.ALL_FLIGHTS);
+					objectOut.writeObject(req);						
+					objectOut.flush();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 			
-			//TODO program buttons for myBookings window
+			
 			
 		}
+	}
+	
+	private void myBookingsWindow() {
+		myBookingsWindow = new JFrame();
+		myBookingsWindow.setTitle(user.getUsername() + "'s tickets");
+		myBookingsWindow.setBounds(325, 225, 450, 400);
+		
+		//top
+		JPanel top = new JPanel();
+		top.add(new JLabel("My tickets:"));
+		myBookingsWindow.add(top, BorderLayout.NORTH);
 
-		private void myBookingsWindow() {
-			myBookingsWindow = new JFrame();
-			myBookingsWindow.setTitle("New User");
-			myBookingsWindow.setBounds(325, 225, 450, 400);
-			
-			//top
-			JPanel top = new JPanel();
-			top.add(new JLabel("My tickets:"));
-			myBookingsWindow.add(top, BorderLayout.NORTH);
+		//center
+		JPanel center = new JPanel();
+		ticketModel = new DefaultListModel<Ticket>();
+		ticketList = new JList<Ticket>(ticketModel);
+		ticketList.setFont(new Font("Courier New", Font.BOLD, 12));
+		//flightList.addListSelectionListener(new ListAction());
+		ticketList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		ticketList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		ticketList.setVisibleRowCount(-1);
+		JScrollPane textAreaScrollPane = new JScrollPane();
+		myTextArea = new JTextArea();
+		textAreaScrollPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		myTextArea.setFont(new Font("Courier New", Font.BOLD, 12));
+		myTextArea.setEditable(false);
+		textAreaScrollPane = new JScrollPane(ticketList);
+		textAreaScrollPane.setPreferredSize(new Dimension(325, 260));
+		center.add(textAreaScrollPane);
+		myBookingsWindow.add(center, BorderLayout.CENTER);
+		//TODO fill myticketlist with that users tickets 
 
-			//center
-			JPanel center = new JPanel();
-			ticketModel = new DefaultListModel<Ticket>();
-			ticketList = new JList<Ticket>(ticketModel);
-			ticketList.setFont(new Font("Courier New", Font.BOLD, 12));
-			//flightList.addListSelectionListener(new ListAction());
-			ticketList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-			ticketList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-			ticketList.setVisibleRowCount(-1);
-			JScrollPane textAreaScrollPane = new JScrollPane();
-			myTextArea = new JTextArea();
-			textAreaScrollPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-			myTextArea.setFont(new Font("Courier New", Font.BOLD, 12));
-			myTextArea.setEditable(false);
-			textAreaScrollPane = new JScrollPane(ticketList);
-			textAreaScrollPane.setPreferredSize(new Dimension(325, 260));
-			center.add(textAreaScrollPane);
-			myBookingsWindow.add(center, BorderLayout.CENTER);
-			//TODO fill myticketlist with that users tickets 
-
-			//bot
-			JPanel bot = new JPanel();
-			printTicket = new JButton("Print Ticket");
-			bot.add(printTicket);
-			bot.add(Box.createRigidArea(new Dimension(5 ,10)));
-			cancelTicket = new JButton("Cancel Ticket");
-			bot.add(cancelTicket);
-			bot.add(Box.createRigidArea(new Dimension(5 ,10)));
-			returnToMain = new JButton("Return to main");
-			bot.add(returnToMain);
-			myBookingsWindow.add(bot, BorderLayout.SOUTH);
-			
-			myBookingsWindow.setVisible(true);
-			myBookingsWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		}
+		//bot
+		JPanel bot = new JPanel();
+		printTicket = new JButton("Print Ticket");
+		printTicket.addActionListener(new ClientListener());
+		bot.add(printTicket);
+		bot.add(Box.createRigidArea(new Dimension(5 ,10)));
+		cancelTicket = new JButton("Cancel Ticket");
+		cancelTicket.addActionListener(new ClientListener());
+		bot.add(cancelTicket);
+		bot.add(Box.createRigidArea(new Dimension(5 ,10)));
+		returnToMain = new JButton("Return to main");
+		returnToMain.addActionListener(new ClientListener());
+		bot.add(returnToMain);
+		myBookingsWindow.add(bot, BorderLayout.SOUTH);
 		
 	}
-
 
 	private class ListAction implements ListSelectionListener {
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
-			//client = ((JList<Client>)e.getSource()).getSelectedValue();
+			Object o = ((JList<Flight>)e.getSource()).getSelectedValue();
+			if (o instanceof Flight){
+				Flight f = (Flight) o;
+				departureField.setText(f.getSource());
+				destField.setText(f.getDestination());
+				durationField.setText(f.getDuration().toString());
+				depTime.setText(f.getDepartureTime().toString());
+				depDate.setText(f.getDate().toString());
+				totSeatsField.setText(Integer.toString(f.getTotalSeats()));
+				remSeatsField.setText(Integer.toString(f.getavailableSeats()));
+				String temp = "$";
+				DecimalFormat p = new DecimalFormat("###00.00");
+				temp += p.format(f.getPrice());
+				priceField.setText(temp);
+				selectedFlight = f;
+			}
 			//client.flightListInfo(clientIDIn, firstNameIn, lastNameIn, addressIn, postalIn, phoneNumIn, comboBox);
 			//dThread.setClient(client);
 		}
 
 		
-	}
-
-	public static void main(String[] args) {
-		CustomerInterface cust = new CustomerInterface("Test", null);
 	}
 
 	public DefaultListModel<Ticket> getTicketList() {

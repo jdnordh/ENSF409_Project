@@ -1,6 +1,7 @@
 package data.transfer;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 public class Flight implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -89,7 +90,7 @@ public class Flight implements Serializable{
 		this.availableSeats++;
 	}
 	
-	/** send this to a string */
+	/*
 	public String toString(){
 		String res = "";
 		res += Integer.toString(id);
@@ -108,6 +109,19 @@ public class Flight implements Serializable{
 		res += ",";
 		res += Double.toString(price);
 		
+		return res;
+	}
+	*/
+	
+	/** send this to a string */
+	public String toString(){
+		String res = "";
+		res += this.source;
+		res += " to ";
+		res += this.destination;
+		res += ", $";
+		DecimalFormat f = new DecimalFormat("###00.00");
+		res += f.format(price);
 		return res;
 	}
 	
