@@ -33,6 +33,7 @@ public class TaskThread extends Thread{
 					if (t.getType() == Task.LOG_IN || t.getType() == Task.REGISTER_USER) {
 						inputThreads.get(t.belongsTo()).setLogin(t.isFinished());
 						inputThreads.get(t.belongsTo()).setAdmin(t.getUser().isAdmin());
+						inputThreads.get(t.belongsTo()).setUser(t.getUser());
 					}
 					finishedTasks.enQueue(t);
 				}
