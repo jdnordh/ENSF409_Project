@@ -36,7 +36,7 @@ public class OutputThread extends Thread{
 								else response = new ServerOutputCom(ComTypes.FAILED_LOGIN);
 							}
 							else if (temp.getType() == ComTypes.QUERY){
-								if (temp.getQuery() <= ClientRequestCom.FLIGHT_BY_DESTINATION){
+								if (temp.getQuery() <= ClientRequestCom.ALL_FLIGHTS){
 									response = new ServerOutputCom(temp.getMultiple_flights());
 								}
 								else if (temp.getQuery() >= ClientRequestCom.TICKET){
@@ -75,12 +75,12 @@ public class OutputThread extends Thread{
 					sleep(1);
 				}
 			} catch (InterruptedException e){
-				System.out.println("Error: " + e.getMessage());
+				System.out.println("Error in Output Thread "+ this.getName() + ": " + e.getMessage());
 			} catch (IOException e){
-				System.out.println("Error: " + e.getMessage());
+				System.out.println("Error in Output Thread "+ this.getName() + ": " + e.getMessage());
 				out = null;
 			}catch (NullPointerException e) {
-				System.out.println("Error: " + e.getMessage());
+				System.out.println("Error in Output Thread "+ this.getName() + ": " + e.getMessage());
 				out = null;
 			}
 		}

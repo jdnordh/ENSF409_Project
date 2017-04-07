@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
+import data.transfer.Date;
 import data.transfer.Flight;
 import data.transfer.Ticket;
 import data.transfer.User;
@@ -55,6 +56,7 @@ public class Task {
 	private Vector<Ticket> multiple_tickets;
 	/** amount of seats wanting to be booked */
 	private int seats;
+	private Date date;
 	
 	/**
 	 * Create a task
@@ -104,6 +106,10 @@ public class Task {
 					multiple_flights = database.searchDestinationCity(search);
 					finished = true;
 				}
+				else if (query == ClientRequestCom.FLIGHT_BY_DATE){
+					multiple_flights = database.searchDate(date);
+					finished = true;
+				}
 				else if (query == ClientRequestCom.ALL_FLIGHTS){
 					multiple_flights = database.browse();
 					finished = true;
@@ -122,6 +128,9 @@ public class Task {
 				finished = true;
 			}
 			else if (type == ComTypes.CANCEL_TICKET){
+				finished = database.removeTicket(user, ticket);
+			}
+			else if (type == ComTypes.REMOVE_TICKET){
 				finished = database.removeTicket(user, ticket);
 			}
 			else if (type == ComTypes.ADD_FLIGHT){
@@ -230,6 +239,14 @@ public class Task {
 
 	public void setMultiple_tickets(Vector<Ticket> multiple_tickets) {
 		this.multiple_tickets = multiple_tickets;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	
 }

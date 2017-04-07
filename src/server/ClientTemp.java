@@ -6,9 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
-import client.Client;
-import client.ClientGui;
-import client.ClientInputThread;
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
 import data.transfer.ServerOutputCom;
@@ -25,8 +22,6 @@ public class ClientTemp {
 	private Socket socket;
 	private ObjectInputStream objectIn;
 	private ObjectOutputStream objectOut;
-	private ClientInputThread in;
-	private ClientGui Gui;
 	
 	/**
 	 * Construct a GameClient
@@ -52,11 +47,7 @@ public class ClientTemp {
 	public void communicate()  {
 		System.out.println("Starting...");
 		System.out.println("Got connection: " + socket.toString());
-		//in = new ClientInputThread(objectIn);
-		//in.start();
 			
-		//Gui = new ClientGui();
-		//Gui.setVisible(true);
 		try {
 			User u = new User();
 			u.setUsername("user");
@@ -76,11 +67,21 @@ public class ClientTemp {
 				System.out.println("Type: " + response.type());
 			}
 			
+			req = new ClientRequestCom(ComTypes.QUERY);
+			req.setQuery(ClientRequestCom.ALL_FLIGHTS);
+			objectOut.writeObject(req);
+			objectOut.flush();
 			
-			//in.join();
-		}// catch (InterruptedException e1) {
-			//e1.printStackTrace();
-		//} 
+			response = (ServerOutputCom) objectIn.readObject();
+			if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+				for (int i = 0; i < response.getFlights().size(); i++){
+					System.out.println("Destination: " + response.getFlights().get(i).getDestination());
+				}
+			}
+			else {
+				System.out.println("Type: " + response.type());
+			}
+		}
 		catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {

@@ -45,11 +45,11 @@ public class CustomerGui extends JFrame {
 	private DefaultListModel<Client> list;
 	
 	protected JTextArea textArea;
-	
+
 	public CustomerGui(Object o){
 		cust = new CustomerGui("Customer");
 	}
-	
+
 	public CustomerGui(Object o, String user){
 		cust = new CustomerGui(user);
 	}

@@ -2,8 +2,6 @@ package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Vector;
-
 import javax.swing.JOptionPane;
 
 import data.transfer.ComTypes;
@@ -32,16 +30,16 @@ public class ClientInputThread extends Thread{
 				
 				 if (response.type() == ComTypes.USER_CONFIRM){
 					 user = response.getUser();
-					 customerGui = new CustomerGui(null, user.getFirstName()); 
+					 setCustomerGui(new CustomerGui(null, user.getFirstName())); 
 				 }
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
 					 user = response.getUser();
-					 customerGui = new CustomerGui(null, user.getFirstName());
+					 setCustomerGui(new CustomerGui(null, user.getFirstName()));
 					 clientGui.dispose();
 				 }
 				 else if (response.type() == ComTypes.USER_CONFIRM_ADMIN){
 					 user = response.getUser();
-					 adminGui = new AdminGui(null, user.getFirstName());
+					 setAdminGui(new AdminGui(null, user.getFirstName()));
 					 clientGui.dispose();
 				 }
 				 else if (response.type() == ComTypes.FAILED_LOGIN){
@@ -50,50 +48,42 @@ public class ClientInputThread extends Thread{
 				 else if (response.type() == ComTypes.FAILED_REGISTER){
 					JOptionPane.showMessageDialog(null, "Username is already taken");
 				 }
-				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){ //TODO
-					Vector<Flight> f = response.getFlights();
-					for (int i = 0; i < f.size(); i++){
-						//TODO 
-					}
-					
+				 else if (response.type() == ComTypes.BAD_REQUEST){
+					 JOptionPane.showMessageDialog(null, "Bad client request");
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 
+					 //TODO  add vector of flights to a list
 				 }
-				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 
+				 else if (response.type() == ComTypes.RETURN_QUERY_TICKET){
+					//TODO  add vector of tickets to a list
 				 }
-				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 
+				 else if (response.type() == ComTypes.BOOK_CONFIRM){
+					 JOptionPane.showMessageDialog(null, "Booking confirmed");
 				 }
-				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 
+				 else if (response.type() == ComTypes.FLIGHT_DELETE_CONFIRM){
+					 JOptionPane.showMessageDialog(null, "Flight deleted");
 				 }
-				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 
+				 else if (response.type() == ComTypes.TICKET_DELETE_CONFIRM){
+					 JOptionPane.showMessageDialog(null, "Ticket deleted");
 				 }
-				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 
-				 }
-				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 
-				 }
-				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
-					 
+				 else if (response.type() == ComTypes.FLIGHT_ADD_CONFIRM){
+					 JOptionPane.showMessageDialog(null, "Flight(s) added");
 				 }
 				
 				sleep(1);
 			} catch (IOException e) {
 				System.out.println("Disconected: " + e.getMessage());
+				System.exit(1);
 			} catch (NullPointerException n){
 				System.out.println("Disconected: Connection Reset");
+				System.exit(1);
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+				System.out.println("Error: " + e.getMessage());
 				e.printStackTrace();
 			} catch (ClassCastException e){
 				System.out.println("Error: " + e.getMessage());
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				System.out.println("Error: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -107,6 +97,26 @@ public class ClientInputThread extends Thread{
 
 	public void setClientGui(ClientGui clientGui) {
 		this.clientGui = clientGui;
+	}
+
+
+	public CustomerGui getCustomerGui() {
+		return customerGui;
+	}
+
+
+	public void setCustomerGui(CustomerGui customerGui) {
+		this.customerGui = customerGui;
+	}
+
+
+	public AdminGui getAdminGui() {
+		return adminGui;
+	}
+
+
+	public void setAdminGui(AdminGui adminGui) {
+		this.adminGui = adminGui;
 	}
 	
 }
