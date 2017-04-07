@@ -16,8 +16,11 @@ import javax.swing.*;
 
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
+import data.transfer.Date;
 import data.transfer.Flight;
 import data.transfer.Ticket;
+import data.transfer.TimeStamp;
+import data.transfer.User;
 
 
 public class AdminInterface extends JFrame{
@@ -70,11 +73,12 @@ public class AdminInterface extends JFrame{
 	private JTextField fileName;
 	private ClientListener listen;
 	
+	private User user;
 	
-	
-	public AdminInterface(String user, ObjectOutputStream o) {
+	public AdminInterface(User u, ObjectOutputStream o) {
 		out = o;
-		this.setTitle(user + ": Administration Mode");
+		user = u;
+		this.setTitle(user.getFirstName() + ": Administration Mode");
 		this.setBounds(325, 225, 300, 160);
 		this.setLayout(new GridLayout(4, 1));
 		
@@ -96,6 +100,28 @@ public class AdminInterface extends JFrame{
 		mainMenu2.addActionListener(listen);
 		mainMenu3.addActionListener(listen);
 		mainMenu4.addActionListener(listen);
+		addFlightButton.addActionListener(listen);
+		browse.addActionListener(listen);
+		browse.addActionListener(listen);
+		browse.addActionListener(listen);
+		browse.addActionListener(listen);
+		browse.addActionListener(listen);
+		browse.addActionListener(listen);
+		browse.addActionListener(listen);
+
+		/* 	private JButton browse;
+	private JButton addFlight;
+	private JButton addFlightFile;
+	private JButton cancelBooking;
+	private JButton addFlightButton;
+	private JButton cancelFlightsButton;
+	private JButton deleteFlightButton;
+	private JButton mainMenu1;
+	private JButton mainMenu2;
+	private JButton mainMenu3;
+	private JButton mainMenu4;
+	private JButton addFlightFileButton;
+	*/
 		
 		this.add(top());
 		this.add(basement());
@@ -293,7 +319,6 @@ public class AdminInterface extends JFrame{
 		//row nine
 		JPanel rNine = new JPanel();
 		addFlightButton = new JButton("Add Flight");
-		addFlightButton.addActionListener(listen);
 		rNine.add(addFlightButton);
 		rNine.add(Box.createRigidArea(new Dimension(15, 10)));
 		rNine.add(mainMenu3);
@@ -356,6 +381,15 @@ public class AdminInterface extends JFrame{
 			if (e.getSource() == browse) {
 				start.setVisible(false);
 				ticketBrowseWindow.setVisible(true);
+				ClientRequestCom req = new ClientRequestCom(ComTypes.QUERY);
+				req.setQuery(ClientRequestCom.ALL_TICKETS);
+				req.setUser(user);
+				try {
+					out.writeObject(req);
+					out.flush();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+				}
 			}
 			
 			else if (e.getSource() == addFlight) {
@@ -370,6 +404,15 @@ public class AdminInterface extends JFrame{
 			else if (e.getSource() == cancelFlightsButton) {
 				start.setVisible(false);
 				flightBrowseWindow.setVisible(true);
+				ClientRequestCom req = new ClientRequestCom(ComTypes.QUERY);
+				req.setQuery(ClientRequestCom.ALL_FLIGHTS);
+				req.setUser(user);
+				try {
+					out.writeObject(req);
+					out.flush();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+				}
 			}
 			
 			else if (e.getSource() == mainMenu1 || e.getSource() == mainMenu2
@@ -398,22 +441,151 @@ public class AdminInterface extends JFrame{
 			}
 			else if (e.getSource() == cancelBooking){
 				ClientRequestCom req = new ClientRequestCom(ComTypes.CANCEL_TICKET);
-				//TODO get the ticket from list of tickets
-				//req.setTicket(ticket); //get ticket from list of tickets
-				
+				Ticket t = ticketList.getSelectedValue();
+				req.setTicket(t);
+				req.setUser(user);
 				try {
 					out.writeObject(req);
 					out.flush();
 				} catch (IOException e1) {
 					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
 				}
-				
+			}
+			else if (e.getSource() == deleteFlightButton){
+				ClientRequestCom req = new ClientRequestCom(ComTypes.REMOVE_FLIGHT);
+				Flight f = flightList.getSelectedValue();
+				req.setFlight(f);
+				req.setUser(user);
+				try {
+					out.writeObject(req);
+					out.flush();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+				}
+			}
+			else if (e.getSource() == addFlightButton){
+				System.out.println("Pressing add flight button");
+				// error checking
+				if (departureField.getText().equals("") || destField.getText().equals("") ||
+						depTime.getText().equals("") || depDate.getText().equals("") || 
+						durationField.getText().equals("") || totSeatsField.getText().equals("") ||
+						remSeatsField.getText().equals("") || priceField.getText().equals("")){
+					JOptionPane.showMessageDialog(null, "Error: One or more of the required field are empty");
+				}
+				else if (Integer.parseInt(totSeatsField.getText()) < 0 || 
+						Integer.parseInt(remSeatsField.getText()) < 0 ||
+						Double.parseDouble(priceField.getText()) < 0){
+					JOptionPane.showMessageDialog(null, "Error: Numbers can't be negative");
+				}
+				else {
+					// error checking done
+					ClientRequestCom req = new ClientRequestCom(ComTypes.ADD_FLIGHT);
+					Flight f = new Flight();
+					
+					
+					f.setId(Integer.parseInt(flightNumField.getText()));
+					f.setSource(departureField.getText());
+					f.setDestination(destField.getText());
+					int minutes = 0, hours = 0;
+					String t = new String(depTime.getText());
+					try {
+						boolean min = false;
+						String temp = "";
+						for (int i = 0; i < t.length(); i++){
+							if (min){
+								temp += t.charAt(i);
+							}
+							else {
+								if (t.charAt(i) == ':'){
+									min = true;
+									hours = Integer.parseInt(temp);
+									hours = hours % 24;
+									temp = "";
+								}
+								else {
+									temp += t.charAt(i);
+								}
+							}
+						}
+						minutes = Integer.parseInt(temp);
+						minutes = minutes % 60;
+						if (!min) {
+							hours = minutes = 0;
+						}
+					} catch (Exception e1){
+						JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+						return;
+					}
+					
+					f.setDepartureTime(new TimeStamp(minutes, hours));
+					t = new String(durationField.getText());
+					try {
+						boolean min = false;
+						String temp = "";
+						for (int i = 0; i < t.length(); i++){
+							if (min){
+								temp += t.charAt(i);
+							}
+							else {
+								if (t.charAt(i) == ':'){
+									min = true;
+									hours = Integer.parseInt(temp);
+									hours = hours % 24;
+									temp = "";
+								}
+								else {
+									temp += t.charAt(i);
+								}
+							}
+						}
+						minutes = Integer.parseInt(temp);
+						minutes = minutes % 60;
+						if (!min) {
+							hours = minutes = 0;
+						}
+					} catch (Exception e1){
+						JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+						return;
+					}
+					f.setDuration(new TimeStamp(minutes, hours));
+					f.setTotalSeats(Integer.parseInt(totSeatsField.getText()));
+					f.setavailableSeats(Integer.parseInt(remSeatsField.getText()));
+					f.setPrice(Double.parseDouble(priceField.getText()));
+					
+					
+					req.setFlight(f);
+					req.setUser(user);
+					try {
+						out.writeObject(req);
+						out.flush();
+					} catch (IOException e1) {
+						JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+					} catch (NumberFormatException e1){
+						JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
+					}
+				}
 			}
 		}
 	}
 
+	/*
+	 * private JTextField searchFlights;
+	private JTextField flightNumField;
+	private JTextField departureField;
+	private JTextField destField;
+	private JTextField depDate;
+	private JTextField depTime;
+	private JTextField durationField;
+	private JTextField totSeatsField;
+	private JTextField remSeatsField;
+	private JTextField priceField;
+	private JTextField fileName;
+	 */
+	
 	public static void main(String[] args) {
-		AdminInterface a = new AdminInterface("user", null);
+		User user = new User("Billy", "Bob",new Date(1,1,1));
+		
+		AdminInterface a = new AdminInterface(user, null);
 	}
 
 }

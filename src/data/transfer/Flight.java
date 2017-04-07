@@ -15,6 +15,8 @@ public class Flight implements Serializable{
 	private int availableSeats;
 	private double price;
 	
+	public Flight(){};
+	
 	/**
 	 * String constructor
 	 * @param f get a line from the cvs to create a flight

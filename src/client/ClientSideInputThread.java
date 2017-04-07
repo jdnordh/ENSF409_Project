@@ -36,18 +36,25 @@ public class ClientSideInputThread extends Thread{
 		while (running){
 			try {
 				 ServerOutputCom response = (ServerOutputCom) in.readObject();
-				
+				 System.out.println("Type is: " + response.type());
 				 if (response.type() == ComTypes.USER_CONFIRM){
 					 user = loginWindow.getUser();
-					 CustomerInterface c = new CustomerInterface(user.getFirstName(), out);
-					 c.setVisible(true);
-					 setCustomerGui(c); 
-					 setAdminGui(null);
+					 if (user.getUsername().equals("admin")){
+						 AdminInterface c = new AdminInterface(user, out);
+						 setCustomerGui(null); 
+						 setAdminGui(c);
+					 }
+					 else {
+						 CustomerInterface c = new CustomerInterface(user.getUsername(), out);
+						 c.setVisible(true);
+						 setCustomerGui(c); 
+						 setAdminGui(null);
+					 }
 					 loginWindow.close();
 				 }
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
 					 user = loginWindow.getUser();
-					 CustomerInterface c = new CustomerInterface(user.getFirstName(), out);
+					 CustomerInterface c = new CustomerInterface(user.getUsername(), out);
 					 c.setVisible(true);
 					 setCustomerGui(c);  
 					 setAdminGui(null);
@@ -55,7 +62,7 @@ public class ClientSideInputThread extends Thread{
 				 }
 				 else if (response.type() == ComTypes.USER_CONFIRM_ADMIN){
 					 user = loginWindow.getUser();
-					 AdminInterface c = new AdminInterface(user.getFirstName(), out);
+					 AdminInterface c = new AdminInterface(user, out);
 					 setCustomerGui(null); 
 					 setAdminGui(c);
 					 loginWindow.close();
@@ -71,6 +78,7 @@ public class ClientSideInputThread extends Thread{
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
 					 //TODO  add vector of flights to a list
+					 
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_TICKET){
 					//TODO  add vector of tickets to a list
@@ -93,6 +101,7 @@ public class ClientSideInputThread extends Thread{
 				System.out.println("Disconected: " + e.getMessage());
 				System.exit(1);
 			} catch (NullPointerException n){
+				n.printStackTrace();
 				System.out.println("Disconected: Connection Reset");
 				System.exit(1);
 			} catch (ClassNotFoundException e) {

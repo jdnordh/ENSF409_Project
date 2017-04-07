@@ -249,6 +249,7 @@ public class LoginWindow extends JFrame{
 					u.setUsername(username.getText());
 					u.setPassword(pass);
 					crc.setUser(u);
+					user = u;
 					objectOut.writeObject(crc);
 					objectOut.flush();
 					
