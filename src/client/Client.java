@@ -47,8 +47,8 @@ public class Client {
 		//in = new ClientInputThread(objectIn);
 		//in.start();
 			
-		//Gui = new ClientGui();
-		//Gui.setVisible(true);
+		Gui = new ClientGui();
+		Gui.setVisible(true);
 		try {
 			User u = new User();
 			u.setUsername("user");

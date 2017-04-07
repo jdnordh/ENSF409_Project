@@ -12,13 +12,14 @@ import javax.swing.*;
 
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
+import data.transfer.Date;
+import data.transfer.User;
 
-//TODO create ClientRequestCom
-//TODO fill all required fields
-//TODO put into ObjectOutputStream
-//TODO flush stream
+
 
 public class ClientGui extends JFrame{
+
+	
 
 	private static final long serialVersionUID = 1L;
 	
@@ -218,6 +219,10 @@ public class ClientGui extends JFrame{
 		
 	private class ClientListener implements ActionListener
 	{
+		//TODO create ClientRequestCom
+		//TODO fill all required fields
+		//TODO put into ObjectOutputStream
+		//TODO flush stream
 
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == chooseLogin) {
@@ -232,27 +237,8 @@ public class ClientGui extends JFrame{
 			
 			else if(e.getSource() == login) {
 				// TODO create client request so server can handle logins
+				ClientRequestCom crc = new ClientRequestCom(ComTypes.LOG_IN);
 				
-				String pass = new String(password.getPassword());  //Use this string for password
-				
-				/*if(username.getText().equals("Admin1") || username.getText().equals("Admin2"))
-				{
-					if(pass.equals("pass"))
-					{
-						loginWindow.dispose();
-						new AdminGui(null);
-					}
-					else
-					{
-						JOptionPane.showMessageDialog(dialogFrame, "Username/Password Incorrect.");
-						password.setText("");
-					}
-				}
-				else
-				{
-					new CustomerGui();
-				}
-				*/
 								
 			}
 			
@@ -263,9 +249,10 @@ public class ClientGui extends JFrame{
 			
 			else if(e.getSource() == createAccount) {
 				//TODO fix
-				System.out.println("Creating new account");
-				String pass = new String(newUserPassword.getPassword());  //Use this string for password
-				String confirmPass = new String(confirmUserPassword.getPassword());  //Use this string for password
+				System.out.println("Attempting to creating a new account");
+				
+				String pass = new String(newUserPassword.getPassword());
+				String confirmPass = new String(confirmUserPassword.getPassword());
 
 			
 				if(newUserFN.getText().equals("") || newUserLN.getText().equals("") ||
@@ -274,42 +261,44 @@ public class ClientGui extends JFrame{
 				{
 					JOptionPane.showMessageDialog(dialogFrame, "One or More of the Required Fields are Blank.");
 				}
-				
 				else if(!pass.equals(confirmPass))
 				{
 					JOptionPane.showMessageDialog(dialogFrame, "Password fields are not the same.");
 					newUserPassword.setText("");
 					confirmUserPassword.setText("");
 				}
+				else if(comboBoxMonth.getSelectedItem().toString() == "2" && 
+						(comboBoxDay.getSelectedItem().toString() == "29" ||
+						 comboBoxDay.getSelectedItem().toString() == "30" ||
+						 comboBoxDay.getSelectedItem().toString() == "31"))
+				{
+					JOptionPane.showMessageDialog(dialogFrame, "Invalid Date entered.");
+				}
 				else
 				{
 					newUserWindow.dispose();
 					ClientRequestCom crc = new ClientRequestCom(ComTypes.REGISTER_USER);
-					//crc.setUser(newUserFN.getText(), newUserLN.getText(), );
+					crc.setUser(new User(newUserFN.getText(), newUserLN.getText(), newUserUN.getText(),
+								pass, new Date(Integer.parseInt(comboBoxDay.getSelectedItem().toString()),
+												Integer.parseInt(comboBoxMonth.getSelectedItem().toString()),
+												Integer.parseInt(comboBoxYear.getSelectedItem().toString()))));
 					
-					//g = new ClientGui();
+					g = new ClientGui();
 				}
 			}
 			
-			else if(e.getSource() == cancelCreation) {
+			else if(e.getSource() == cancelCreation) 
+			{
 				newUserWindow.dispose();
 				g = new ClientGui();
 			}
-			
 		}
-
-		
 	}
 	
 	public static void main(String[] args){
+		
+		int a = 1;
 		g = new ClientGui();
 	}
-
-	public ObjectOutputStream getOut() {
-		return out;
-	}
-
-	public void setOut(ObjectOutputStream out) {
-		this.out = out;
-	}
+	
 }
