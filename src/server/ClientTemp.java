@@ -40,7 +40,6 @@ public class ClientTemp {
 			objectOut = new ObjectOutputStream(socket.getOutputStream());
 			socket.getOutputStream().flush();
 			objectIn = new ObjectInputStream(socket.getInputStream());
-			System.out.println("Finished Constructing");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -78,7 +77,6 @@ public class ClientTemp {
 
 	public static void main(String[] args) throws IOException  {
 		ClientTemp a = new ClientTemp("70.77.96.98", 6000);
-		System.out.println("CHere");
 		a.communicate();
 	}
 }
