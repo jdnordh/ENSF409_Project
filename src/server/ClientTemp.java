@@ -37,7 +37,7 @@ public class ClientTemp {
 			objectIn = new ObjectInputStream(socket.getInputStream());
 			
 		} catch (IOException e) {
-			System.err.println(e.getStackTrace());
+			e.printStackTrace();
 		}
 	}
 	
