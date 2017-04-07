@@ -2,9 +2,12 @@ package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.Vector;
+
 import javax.swing.JOptionPane;
 
 import data.transfer.ComTypes;
+import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.User;
 
@@ -48,6 +51,10 @@ public class ClientInputThread extends Thread{
 					JOptionPane.showMessageDialog(null, "Username is already taken");
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){ //TODO
+					Vector<Flight> f = response.getFlights();
+					for (int i = 0; i < f.size(); i++){
+						//TODO 
+					}
 					
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){

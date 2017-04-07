@@ -64,7 +64,7 @@ public class TimeStamp implements Serializable{
 		String r = "";
 		r += Integer.toString(hours);
 		r += ":";
-		DecimalFormat f = new DecimalFormat("00");
+		DecimalFormat f = new DecimalFormat("00"); 
 		r += f.format(minutes);
 		return r;
 	}
