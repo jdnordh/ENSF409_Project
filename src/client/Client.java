@@ -34,7 +34,7 @@ public class Client {
 			objectIn = new ObjectInputStream(socket.getInputStream());
 			
 		} catch (IOException e) {
-			System.err.println(e.getStackTrace());
+			e.printStackTrace();
 		}
 	}
 	
@@ -43,6 +43,7 @@ public class Client {
 	 */
 	public void communicate()  {
 		System.out.println("Starting...");
+		if (socket == null) System.exit(1);
 		System.out.println("Got connection: " + socket.toString());
 		//in = new ClientInputThread(objectIn);
 		//in.start();
@@ -104,7 +105,7 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws IOException  {
-		Client a = new Client("70.77.96.98", 6000);
+		Client a = new Client("192.168.1.31", 6000);
 		a.communicate();
 	}
 }

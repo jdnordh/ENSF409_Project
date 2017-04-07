@@ -31,13 +31,16 @@ public class ClientTemp {
 	public ClientTemp(String serverName, int portNumber) {
 		try {
 			InetAddress a = InetAddress.getByName(serverName);
+			System.out.println("Connecting to server...");
 			socket = new Socket(a, portNumber);
+			System.out.println("Connected to server");
 			objectOut = new ObjectOutputStream(socket.getOutputStream());
 			socket.getOutputStream().flush();
 			objectIn = new ObjectInputStream(socket.getInputStream());
-			
+			System.out.println("Finished Constructing");
 		} catch (IOException e) {
-			System.err.println(e.getStackTrace());
+			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 	
@@ -100,6 +103,7 @@ public class ClientTemp {
 
 	public static void main(String[] args) throws IOException  {
 		ClientTemp a = new ClientTemp("192.168.1.31", 6000);
+		System.out.println("CHere");
 		a.communicate();
 	}
 }
