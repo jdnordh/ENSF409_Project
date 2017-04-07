@@ -76,7 +76,6 @@ public class AdminGui extends JFrame{
 
 	private JPanel top() {
 		JPanel panel = new JPanel();
-		
 		browse = new JButton("Browse Bookings");
 		browse.addActionListener(new ClientListener());
 		panel.add(browse);
@@ -267,6 +266,7 @@ public class AdminGui extends JFrame{
 			if (e.getSource() == browse) {
 				a.dispose();
 				browseWindow();
+				
 			}
 			
 			else if (e.getSource() == addFlight) {
@@ -283,17 +283,17 @@ public class AdminGui extends JFrame{
 				if(browseWindow != null)
 				{
 					browseWindow.dispose();
-					a = new AdminGui();
+					a = new AdminGui("user");
 				}
 				else if(addFlightWindow != null)
 				{
 					addFlightWindow.dispose();
-					a = new AdminGui();
+					a = new AdminGui("user");
 				}
 				else if(addFlightFileWindow != null)
 				{
 					addFlightFileWindow.dispose();
-					a = new AdminGui();
+					a = new AdminGui("user");
 				}
 				
 			}
@@ -301,6 +301,7 @@ public class AdminGui extends JFrame{
 	}
 
 	public static void main(String[] args) {
+		a = new AdminGui("user");
 	}
 
 }

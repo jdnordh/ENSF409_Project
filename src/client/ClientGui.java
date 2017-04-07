@@ -13,6 +13,11 @@ import javax.swing.*;
 import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
 
+//TODO create ClientRequestCom
+//TODO fill all required fields
+//TODO put into ObjectOutputStream
+//TODO flush stream
+
 public class ClientGui extends JFrame{
 
 	private static final long serialVersionUID = 1L;
@@ -256,7 +261,7 @@ public class ClientGui extends JFrame{
 			}
 			
 			else if(e.getSource() == createAccount) {
-				
+				//TODO fix
 				String pass = new String(newUserPassword.getPassword());  //Use this string for password
 				String confirmPass = new String(confirmUserPassword.getPassword());  //Use this string for password
 
