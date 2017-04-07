@@ -48,7 +48,7 @@ public class TicketServer {
 			inputThreads = new Vector<InputThread>();
 			outputThreads = new Vector<OutputThread>();
 			for (int i = 0; i < 20; i++){
-				InputThread temp1 = new InputThread(i, tasks);
+				InputThread temp1 = new InputThread(i, tasks, sockets);
 				OutputThread temp2 = new OutputThread(i, finishedTasks);
 				temp1.start();
 				temp2.start();
@@ -81,21 +81,23 @@ public class TicketServer {
 					
 					sockets[connectionIndex] = serverSocket.accept();
 					System.out.println("Got connection: " + sockets[connectionIndex].toString());
+					
 					ObjectOutputStream out = new ObjectOutputStream(sockets[connectionIndex].getOutputStream());
 					ObjectInputStream in = new ObjectInputStream(sockets[connectionIndex].getInputStream());
 					
 					
 					outputThreads.get(connectionIndex).setStream(out);
 					inputThreads.get(connectionIndex).setStream(in);
-					
+					inputThreads.get(connectionIndex).setLogin(false);
+					inputThreads.get(connectionIndex).setAdmin(false);
 					
 					connections = 0;
 					for (int i = 0; i < 20; i++){
 						if (sockets[i] != null && sockets[i].isClosed()) sockets[i] = null;
 						if (sockets[i] != null) connections++;
 					}
-					
 					System.out.println("Connections: " + connections);
+					
 					//TODO fix the amount of connections allowed, as it is currently wrong
 				}
 				

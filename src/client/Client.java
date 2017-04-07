@@ -44,11 +44,11 @@ public class Client {
 	public void communicate()  {
 		System.out.println("Starting...");
 		System.out.println("Got connection: " + socket.toString());
-		in = new ClientInputThread(objectIn);
-		in.start();
+		//in = new ClientInputThread(objectIn);
+		//in.start();
 			
-		Gui = new ClientGui();
-		Gui.setVisible(true);
+		//Gui = new ClientGui();
+		//Gui.setVisible(true);
 		try {
 			User u = new User();
 			u.setUsername("user");
@@ -68,6 +68,20 @@ public class Client {
 				System.out.println("Type: " + response.type());
 			}
 			
+			req = new ClientRequestCom(ComTypes.QUERY);
+			req.setQuery(ClientRequestCom.ALL_FLIGHTS);
+			objectOut.writeObject(req);
+			objectOut.flush();
+			
+			response = (ServerOutputCom) objectIn.readObject();
+			if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
+				for (int i = 0; i < response.getFlights().size(); i++){
+					System.out.println("Destination: " + response.getFlights().get(i).getDestination());
+				}
+			}
+			else {
+				System.out.println("Type: " + response.type());
+			}
 			
 			//in.join();
 		}// catch (InterruptedException e1) {
@@ -90,7 +104,7 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws IOException  {
-		Client a = new Client("70.77.96.98", 6000);
+		Client a = new Client("192.168.1.31", 6000);
 		a.communicate();
 	}
 }

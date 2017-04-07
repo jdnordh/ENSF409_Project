@@ -283,17 +283,30 @@ public class AdminGui extends JFrame{
 				if(browseWindow != null)
 				{
 					browseWindow.dispose();
+<<<<<<< HEAD
 					a = new AdminGui("user");
+=======
+					//a = new AdminGui();
+					//TODO fix these commented lines
+>>>>>>> b9b6dea202df1ab1dc6318c5b9c78675ea772724
 				}
 				else if(addFlightWindow != null)
 				{
 					addFlightWindow.dispose();
+<<<<<<< HEAD
 					a = new AdminGui("user");
+=======
+					//a = new AdminGui();
+>>>>>>> b9b6dea202df1ab1dc6318c5b9c78675ea772724
 				}
 				else if(addFlightFileWindow != null)
 				{
 					addFlightFileWindow.dispose();
+<<<<<<< HEAD
 					a = new AdminGui("user");
+=======
+					//a = new AdminGui();
+>>>>>>> b9b6dea202df1ab1dc6318c5b9c78675ea772724
 				}
 				
 			}

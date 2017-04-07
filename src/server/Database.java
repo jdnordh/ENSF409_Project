@@ -49,15 +49,19 @@ public class Database {
 	 */
 	public boolean login(User user){
 		try {
+			System.out.println("Logging in: " + user.getUsername());
 			ResultSet result = statement.executeQuery("SELECT * FROM users WHERE username = '" + user.getUsername() + "'");
 			while (result.next()){
 				String p = result.getString(3);
 				int admin = result.getInt(7);
 				if (admin == 1 && p.equals(user.getPassword())) {
 					user.setAdmin(true);
-					System.out.println("Admin logged on");
+					System.out.println(user.getUsername() + " is admin");
 				}
-				else user.setAdmin(false);
+				else {
+					System.out.println(user.getUsername() + " is not admin");
+					user.setAdmin(false);
+				}
 				return p.equals(user.getPassword());
 			}
 			
@@ -216,6 +220,38 @@ public class Database {
 			int i = 0;
 			while (i < res.size()){
 				if (!res.get(i).getDestination().equalsIgnoreCase(city)) {
+					res.remove(i);
+				}
+				else {
+					i++;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+	
+	/**
+	 * Search for flights by date of departure
+	 * @param date Date
+	 * @return A vector of flights
+	 */
+	public Vector<Flight> searchDate(Date date){
+		Vector<Flight> res = new Vector<Flight>();
+		try {
+			ResultSet result = statement.executeQuery("select * from flights");
+			while (result.next()){
+				String f = "";
+				for (int i = 1; i < 10; i++){
+					f += (result.getString(i));
+					if (i < 9) f += ",";
+				}
+				res.add(new Flight(f));
+			}
+			int i = 0;
+			while (i < res.size()){
+				if (!res.get(i).getDate().equals(date)) {
 					res.remove(i);
 				}
 				else {
@@ -406,7 +442,10 @@ public class Database {
 	 * @return True if removed
 	 */
 	public boolean removeTicket(User user, Ticket ticket){
-		if (!user.isAdmin()) return false;
+		if (!user.isAdmin()){
+			if (!user.getFirstName().equals(ticket.getUser().getFirstName())) return false;
+			if (!user.getLastName().equals(ticket.getUser().getLastName())) return false;		// Check to make sure a user is deleting their own tickets
+		}
 		try{
 			Statement s = (Statement) connection.createStatement();
 			String id = Integer.toString(ticket.getId());

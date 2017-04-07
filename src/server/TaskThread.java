@@ -25,8 +25,10 @@ public class TaskThread extends Thread{
 	public void run(){
 		while (true){
 			try {
+				while (tasks.isEmpty()) sleep(1);
 				if (!tasks.isEmpty()){
 					Task t = tasks.deQueue();
+					System.out.println(this.getName() + " Performing task: " + t.getType());
 					t.perform(database);
 					if (t.getType() == Task.LOG_IN || t.getType() == Task.REGISTER_USER) {
 						inputThreads.get(t.belongsTo()).setLogin(t.isFinished());
@@ -36,10 +38,10 @@ public class TaskThread extends Thread{
 				}
 				sleep(1);
 			} catch (InterruptedException e){
-				System.out.println("Error: " + e.getMessage());
+				System.out.println("Error in "+ this.getName() + ": " + e.getMessage());
 			} catch (NullPointerException e){
-				System.out.println("Error: " + e.getMessage());
-				e.printStackTrace();
+				System.out.println("Error in "+ this.getName() + ": " + e.getMessage());
+				//e.printStackTrace();
 			}
 		}
 	}
