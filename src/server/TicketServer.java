@@ -97,8 +97,6 @@ public class TicketServer {
 						if (sockets[i] != null) connections++;
 					}
 					System.out.println("Connections: " + connections);
-					
-					//TODO fix the amount of connections allowed, as it is currently wrong
 				}
 				
 			} catch (IOException e){

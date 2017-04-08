@@ -17,10 +17,10 @@ import java.util.Vector;
  * CANCEL_TICKET: ticket
  * 
  * --- The following types are admin only types, so user is inputed to check if the user is admin ---
- * ADD_FLIGHT: user, flight
- * ADD_MULTIPLE_FLIGHTS: user, multiple_flights
- * REMOVE_FLIGHT: user, flight
- * REMOVE_TICKET: user, ticket
+ * ADD_FLIGHT: flight
+ * ADD_MULTIPLE_FLIGHTS: multiple_flights
+ * REMOVE_FLIGHT:  flight
+ * REMOVE_TICKET: ticket
  * 
  * @author Jordan Nordh
  *

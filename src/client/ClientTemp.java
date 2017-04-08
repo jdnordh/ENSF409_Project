@@ -69,7 +69,8 @@ public class ClientTemp {
 	}
 
 	public static void main(String[] args) throws IOException  {
-		ClientTemp a = new ClientTemp("70.77.96.98", 6000);
+		//ClientTemp a = new ClientTemp("70.77.96.98", 6000);
+		ClientTemp a = new ClientTemp("192.168.1.31", 6000);
 		a.communicate();
 	}
 }

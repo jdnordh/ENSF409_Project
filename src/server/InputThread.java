@@ -50,12 +50,14 @@ public class InputThread extends Thread{
 				if (loggedIn && user != null){
 					if (type == ComTypes.QUERY){
 						t.setQuery(req.getQuery());
-						t.setSearch(req.getSearch());
 						if (req.getQuery() == ClientRequestCom.TICKET || req.getQuery() == ClientRequestCom.ALL_TICKETS){
-							t.setUser(req.getUser());
+							t.setUser(user);
 						}
 						else if (req.getQuery() == ClientRequestCom.FLIGHT_BY_DATE){
 							t.setDate(req.getDate());
+						}
+						else {
+							t.setSearch(req.getSearch());
 						}
 					}
 					else if (type == ComTypes.BOOK_FLIGHT){

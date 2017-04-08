@@ -9,7 +9,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
@@ -22,7 +21,6 @@ import data.transfer.ClientRequestCom;
 import data.transfer.ComTypes;
 import data.transfer.Date;
 import data.transfer.Flight;
-import data.transfer.ServerOutputCom;
 import data.transfer.Ticket;
 import data.transfer.User;
 
@@ -45,7 +43,6 @@ public class CustomerInterface extends JFrame {
 	
 	/** editable text fields*/
 	private JTextField searchFlights;
-	private JTextField flightNumField;
 	private JTextField departureField;
 	private JTextField destField;
 	private JTextField depDate;
@@ -84,10 +81,26 @@ public class CustomerInterface extends JFrame {
 	public CustomerInterface(User u, ObjectOutputStream o) {
 		objectOut = o;
 		user = u;
-		this.setTitle("Welcome " + user.getUsername());
+		this.setTitle("Welcome " + user.getFirstName());
 		this.setBounds(325, 225, 800, 600);
 		this.setLayout(new GridLayout(2, 2));
 		
+		searchButton = new JButton("Needs to be initalized");
+		clearButton = new JButton("Needs to be initalized");
+		myBookings = new JButton("Needs to be initalized");
+		bookFlight = new JButton("Needs to be initalized");
+		clearFlight = new JButton("Needs to be initalized");
+		printTicket = new JButton("Needs to be initalized");
+		cancelTicket = new JButton("Needs to be initalized");
+		returnToMain = new JButton("Needs to be initalized");
+		browseFlights = new JButton("Needs to be initalized");
+		
+		flightModel = new DefaultListModel<Flight>();
+		ticketModel = new DefaultListModel<Ticket>();
+		
+		flightList = new JList<Flight>(flightModel);
+		ticketList = new JList<Ticket>(ticketModel);
+
 		myBookingsWindow();
 		
 		this.add(topLeftPanel());
@@ -260,9 +273,9 @@ public class CustomerInterface extends JFrame {
 		rSix.add(new JLabel("Seats to Book:"));
 		rSix.add(Box.createRigidArea(new Dimension(5, 10)));
 		seatsToBook = new JTextField(20);
-		seatsToBook.setEditable(false);
+		seatsToBook.setEditable(true);
 		seatsToBook.setBackground(Color.white);
-		seatsToBook.setText("1");
+		seatsToBook.setText("");
 		seatsToBook.setToolTipText("You can only book one seat at the moment");
 		rSix.add(seatsToBook);
 		rSix.add(Box.createRigidArea(new Dimension(10, 10)));
@@ -325,7 +338,7 @@ public class CustomerInterface extends JFrame {
 							ClientRequestCom crc = new ClientRequestCom(ComTypes.BOOK_FLIGHT);
 							crc.setFlight(selectedFlight);
 							crc.setUser(user);
-							crc.setSeats(1);	//TODO change when seatsToBook is fixed
+							crc.setSeats(Integer.parseInt(seatsToBook.getText()));
 							objectOut.writeObject(crc);
 							objectOut.flush();
 						} catch (IOException e1) {
@@ -353,7 +366,7 @@ public class CustomerInterface extends JFrame {
 			else if (e.getSource() == myBookings)
 			{
 				myBookingsWindow.setVisible(true);
-				
+				if (!ticketModel.isEmpty()) ticketModel.removeAllElements();
 				try {
 					ClientRequestCom crc = new ClientRequestCom(ComTypes.QUERY);
 					crc.setUser(user);
@@ -437,6 +450,7 @@ public class CustomerInterface extends JFrame {
 					req.setUser(user);
 					objectOut.writeObject(req);						
 					objectOut.flush();
+					ticketModel.removeElement(ticketList.getSelectedValue());
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -445,7 +459,7 @@ public class CustomerInterface extends JFrame {
 				myBookingsWindow.setVisible(false);
 			}
 			else if (e.getSource() == browseFlights){
-				flightModel.clear();
+				if (!flightModel.isEmpty()) flightModel.removeAllElements();
 				try {
 					ClientRequestCom req = new ClientRequestCom(ComTypes.QUERY);
 					req.setQuery(ClientRequestCom.ALL_FLIGHTS);
@@ -464,7 +478,7 @@ public class CustomerInterface extends JFrame {
 	private void myBookingsWindow() {
 		myBookingsWindow = new JFrame();
 		myBookingsWindow.setTitle(user.getUsername() + "'s tickets");
-		myBookingsWindow.setBounds(325, 225, 450, 400);
+		myBookingsWindow.setBounds(325, 225, 600, 400);
 		
 		//top
 		JPanel top = new JPanel();
@@ -486,7 +500,7 @@ public class CustomerInterface extends JFrame {
 		myTextArea.setFont(new Font("Courier New", Font.BOLD, 12));
 		myTextArea.setEditable(false);
 		textAreaScrollPane = new JScrollPane(ticketList);
-		textAreaScrollPane.setPreferredSize(new Dimension(325, 260));
+		textAreaScrollPane.setPreferredSize(new Dimension(550, 260));
 		center.add(textAreaScrollPane);
 		myBookingsWindow.add(center, BorderLayout.CENTER);
 

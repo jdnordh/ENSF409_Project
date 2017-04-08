@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author Jordan Nordh & Jeremy Phillips
  *
  */
-public class Date implements Serializable{
+public class Date implements Serializable, Comparable<Date>{
 	private static final long serialVersionUID = 1L;
 	private int month;
 	private int day;
@@ -131,5 +131,17 @@ public class Date implements Serializable{
 	}
 	public void setYear(int y){
 		year = y;
+	}
+
+	@Override
+	public int compareTo(Date d) {
+		if (year != d.getYear()) return year - d.getYear();
+		else {
+			if (month != d.getMonth()) return month - d.getMonth();
+			else {
+				if (day != d.getDay()) return day - d.getDay();
+			}
+		}	
+		return 0;
 	}
 }

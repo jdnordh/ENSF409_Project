@@ -8,7 +8,6 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import data.transfer.ComTypes;
-import data.transfer.Date;
 import data.transfer.Flight;
 import data.transfer.ServerOutputCom;
 import data.transfer.Ticket;
@@ -38,22 +37,15 @@ public class ClientSideInputThread extends Thread{
 				 ServerOutputCom response = (ServerOutputCom) in.readObject();
 				 System.out.println("Type is: " + response.type());
 				 if (response.type() == ComTypes.USER_CONFIRM){
-					 user = loginWindow.getUser();
-					 if (user.getUsername().equals("admin")){
-						 AdminInterface c = new AdminInterface(user, out);
-						 setCustomerGui(null); 
-						 setAdminGui(c);
-					 }
-					 else {
-						 CustomerInterface c = new CustomerInterface(user, out);
-						 c.setVisible(true);
-						 setCustomerGui(c); 
-						 setAdminGui(null);
-					 }
+					 user = response.getUser();
+					 CustomerInterface c = new CustomerInterface(user, out);
+					 c.setVisible(true);
+					 setCustomerGui(c); 
+					 setAdminGui(null);
 					 loginWindow.close();
 				 }
 				 else if (response.type() == ComTypes.REGISTER_CONFIRM){
-					 user = loginWindow.getUser();
+					 user = response.getUser();
 					 CustomerInterface c = new CustomerInterface(user, out);
 					 c.setVisible(true);
 					 setCustomerGui(c);  
@@ -61,7 +53,7 @@ public class ClientSideInputThread extends Thread{
 					 loginWindow.close();
 				 }
 				 else if (response.type() == ComTypes.USER_CONFIRM_ADMIN){
-					 user = loginWindow.getUser();
+					 user = response.getUser();
 					 AdminInterface c = new AdminInterface(user, out);
 					 setCustomerGui(null); 
 					 setAdminGui(c);
@@ -78,24 +70,38 @@ public class ClientSideInputThread extends Thread{
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_FLIGHT){
 					 Vector<Flight> f = response.getFlights();
-					 for (int i = 0; i < f.size(); i++){
-						 if (adminGui != null){
-							 adminGui.getFlightList().addElement(f.get(i));
+					 try {
+						 for (int i = 0; i < f.size(); i++){
+							 if (adminGui != null){
+								 if (adminGui.getFlightList() != null)
+									 adminGui.getFlightList().addElement(f.get(i));
+							 }
+							 else if (customerGui != null){
+								 if (customerGui.getFlightList() != null)
+									 customerGui.getFlightList().addElement(f.get(i));
+							 }
 						 }
-						 else {
-							 customerGui.getFlightList().addElement(f.get(i));
-						 }
-					 }
+					 } catch (NullPointerException e){}
+					 catch (ArrayIndexOutOfBoundsException e){}
 				 }
 				 else if (response.type() == ComTypes.RETURN_QUERY_TICKET){
 					 Vector<Ticket> t = response.getTickets();
 					 for (int i = 0; i < t.size(); i++){
-						 if (adminGui != null){
-							 adminGui.getTicketList().addElement(t.get(i));
+						 System.out.println(t.get(i).toString());
+					 }
+					 try {
+						 for (int i = 0; i < t.size(); i++){
+							 if (adminGui != null){
+								 if (adminGui.getTicketList() != null)
+									 adminGui.getTicketList().addElement(t.get(i));
+							 }
+							 else if (customerGui != null){
+								 if (customerGui.getTicketList() != null)
+									 customerGui.getTicketList().addElement(t.get(i));
+							 }
 						 }
-						 else {
-							 customerGui.getTicketList().addElement(t.get(i));
-						 }
+					 }catch (NullPointerException e){
+						 
 					 }
 				 }
 				 else if (response.type() == ComTypes.BOOK_CONFIRM){
@@ -109,6 +115,21 @@ public class ClientSideInputThread extends Thread{
 				 }
 				 else if (response.type() == ComTypes.FLIGHT_ADD_CONFIRM){
 					 JOptionPane.showMessageDialog(null, "Flight(s) added");
+				 }
+				 else if (response.type() == ComTypes.FLIGHT_DELETE_FAIL){
+					 JOptionPane.showMessageDialog(null, "Flight not deleted");
+				 }
+				 else if (response.type() == ComTypes.TICKET_DELETE_FAIL){
+					 JOptionPane.showMessageDialog(null, "Ticket not deleted");
+				 }
+				 else if (response.type() == ComTypes.FLIGHT_ADD_FAIL){
+					 JOptionPane.showMessageDialog(null, "Flight(s) not added");
+				 }
+				 else if (response.type() == ComTypes.BOOK_FAILED){
+					 JOptionPane.showMessageDialog(null, "Tickets not booked");
+				 }
+				 else if (response.type() == ComTypes.FAILED){
+					 JOptionPane.showMessageDialog(null, "Operation failed");
 				 }
 				
 				sleep(1);

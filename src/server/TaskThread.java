@@ -28,21 +28,23 @@ public class TaskThread extends Thread{
 				while (tasks.isEmpty()) sleep(1);
 				if (!tasks.isEmpty()){
 					Task t = tasks.deQueue();
-					System.out.println(this.getName() + " Performing task: " + t.getType());
-					t.perform(database);
-					if (t.getType() == Task.LOG_IN || t.getType() == Task.REGISTER_USER) {
-						inputThreads.get(t.belongsTo()).setLogin(t.isFinished());
-						inputThreads.get(t.belongsTo()).setAdmin(t.getUser().isAdmin());
-						inputThreads.get(t.belongsTo()).setUser(t.getUser());
+					if (t != null){
+						System.out.println(this.getName() + " Performing task: " + t.getType());
+						t.perform(database);
+						if (t.getType() == Task.LOG_IN || t.getType() == Task.REGISTER_USER) {
+							inputThreads.get(t.belongsTo()).setLogin(t.isFinished());
+							inputThreads.get(t.belongsTo()).setAdmin(t.getUser().isAdmin());
+							inputThreads.get(t.belongsTo()).setUser(t.getUser());
+						}
+						finishedTasks.enQueue(t);
 					}
-					finishedTasks.enQueue(t);
 				}
 				sleep(1);
 			} catch (InterruptedException e){
 				System.out.println("Error in "+ this.getName() + ": " + e.getMessage());
 			} catch (NullPointerException e){
 				System.out.println("Error in "+ this.getName() + ": " + e.getMessage());
-				//e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 	}

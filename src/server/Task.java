@@ -115,17 +115,18 @@ public class Task {
 					finished = true;
 				}
 				else if (query == ClientRequestCom.ALL_TICKETS){
+					System.out.println("Asking database for tickets");
 					multiple_tickets = database.getTickets(user);
 					finished = true;
 				}
 				else if (query == ClientRequestCom.TICKET){
+					System.out.println("Asking database for tickets");
 					multiple_tickets = database.getTickets(user);
 					finished = true;
 				}
 			}
 			else if (type == ComTypes.BOOK_FLIGHT){
-				database.bookTicket(user, flight, seats);
-				finished = true;
+				finished = database.bookTicket(user, flight, seats);
 			}
 			else if (type == ComTypes.CANCEL_TICKET){
 				finished = database.removeTicket(user, ticket);

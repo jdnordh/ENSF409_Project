@@ -13,6 +13,7 @@ import com.mysql.jdbc.Statement;
 
 import data.transfer.Flight;
 import data.transfer.Ticket;
+import data.transfer.TimeStamp;
 import data.transfer.User;
 import data.transfer.Date;
 /**
@@ -97,7 +98,7 @@ public class Database {
 			state.setString(6, user.getBirthday().toString());
 			state.setString(7, Integer.toString(0));
 			state.executeUpdate();
-			
+			user.setAdmin(false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -179,7 +180,7 @@ public class Database {
 	public Vector<Flight> searchSourceCity(String city){
 		Vector<Flight> res = new Vector<Flight>();
 		try {
-			ResultSet result = statement.executeQuery("select * from flights");
+			ResultSet result = statement.executeQuery("select * from flights where source = '" + city + "'");
 			while (result.next()){
 				String f = "";
 				for (int i = 1; i < 10; i++){
@@ -187,15 +188,6 @@ public class Database {
 					if (i < 9) f += ",";
 				}
 				res.add(new Flight(f));
-			}
-			int i = 0;
-			while (i < res.size()){
-				if (!res.get(i).getSource().equalsIgnoreCase(city)) {
-					res.remove(i);
-				}
-				else {
-					i++;
-				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -211,7 +203,7 @@ public class Database {
 	public Vector<Flight> searchDestinationCity(String city){
 		Vector<Flight> res = new Vector<Flight>();
 		try {
-			ResultSet result = statement.executeQuery("select * from flights");
+			ResultSet result = statement.executeQuery("select * from flights where destination = '" + city + "'");
 			while (result.next()){
 				String f = "";
 				for (int i = 1; i < 10; i++){
@@ -219,15 +211,6 @@ public class Database {
 					if (i < 9) f += ",";
 				}
 				res.add(new Flight(f));
-			}
-			int i = 0;
-			while (i < res.size()){
-				if (!res.get(i).getDestination().equalsIgnoreCase(city)) {
-					res.remove(i);
-				}
-				else {
-					i++;
-				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -243,7 +226,7 @@ public class Database {
 	public Vector<Flight> searchDate(Date date){
 		Vector<Flight> res = new Vector<Flight>();
 		try {
-			ResultSet result = statement.executeQuery("select * from flights");
+			ResultSet result = statement.executeQuery("select * from flights where date = '" + date.toString() + "'");
 			while (result.next()){
 				String f = "";
 				for (int i = 1; i < 10; i++){
@@ -251,15 +234,6 @@ public class Database {
 					if (i < 9) f += ",";
 				}
 				res.add(new Flight(f));
-			}
-			int i = 0;
-			while (i < res.size()){
-				if (!res.get(i).getDate().equals(date)) {
-					res.remove(i);
-				}
-				else {
-					i++;
-				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -275,40 +249,36 @@ public class Database {
 	public Vector<Ticket> getTickets(User user){
 		Vector<Ticket> res = new Vector<Ticket>();
 		try {
-			ResultSet result = statement.executeQuery("select * from tickets");
 			if (user.isAdmin()){
+				ResultSet result = statement.executeQuery("select * from tickets");
+				System.out.println("Getting tickets for admin...");
 				while (result.next()){
 					String temp = "";
-					for (int i = 1; i < 12; i++){
+					for (int i = 1; i < 13; i++){
 						temp += result.getString(i);
-						if (i < 11) temp += ",";
+						if (i < 12) temp += ",";
 					}
 					res.add(new Ticket(temp));
 				}
 			}
 			else {
+				System.out.println("Getting tickets for user...");
+				ResultSet result = statement.executeQuery("select * from tickets where username = '" + user.getUsername() + "'");
 				while (result.next()){
 					String f = "";
-					for (int i = 1; i < 12; i++){
+					for (int i = 1; i < 13; i++){
 						f += (result.getString(i));
-						if (i < 11) f += ",";
+						if (i < 12) f += ",";
 					}
 					res.add(new Ticket(f));
-				}
-				int i = 0;
-				while (i < res.size()){
-					if (!res.get(i).equals(user)) {
-						res.remove(i);
-					}
-					else {
-						i++;
-					}
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+		for (int i = 0; i < res.size(); i++){
+			 System.out.println(res.get(i).toString());
+		 }
 		return res;
 	}
 	
@@ -320,21 +290,28 @@ public class Database {
 	 * @param flight Flight
 	 * @param tickets Amount of tickets
 	 */
-	synchronized public void bookTicket(User user, Flight flight, int tickets){
-		try {			
+	synchronized public boolean bookTicket(User user, Flight flight, int tickets){
+		try {
+			if (tickets > flight.getavailableSeats()) return false;
 			// Add the ticket to the ticket table
 			while (tickets > 0){
-				String query = "INSERT tickets VALUES(?,?,?,?,?,?)";
+				String query = "INSERT tickets VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
 				PreparedStatement state = connection.clientPrepareStatement(query);
 				String temp = "";
 				DecimalFormat f = new DecimalFormat("000000");
 				temp += f.format(Table_Tickets++);
 				state.setString(1, temp);
 				state.setString(2, Integer.toString(flight.getId()));
-				state.setString(3, user.getFirstName());
-				state.setString(4, user.getLastName());
-				state.setString(5, user.getBirthday().toString());
-				state.setString(6, Double.toString(flight.getPrice()));
+				state.setString(3, flight.getSource());
+				state.setString(4, flight.getDestination());
+				state.setString(5, flight.getDepartureTime().toString());
+				state.setString(6, flight.getDuration().toString());
+				state.setString(7, flight.getDate().toString());
+				state.setString(8, user.getUsername());
+				state.setString(9, user.getFirstName());
+				state.setString(10, user.getLastName());
+				state.setString(11, user.getBirthday().toString());
+				state.setString(12, Double.toString(flight.getPrice()));
 				state.executeUpdate();
 				flight.seatDecrement();
 				tickets--;
@@ -345,9 +322,10 @@ public class Database {
 			state.setString(1, Integer.toString(flight.getavailableSeats()));
 			state.setString(2, Integer.toString(flight.getId()));
 			state.executeUpdate();
-			
+			return true;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("Error: " + e.getMessage());
+			return false;
 		}
 	}
 	
@@ -358,23 +336,27 @@ public class Database {
 	 * @return True if the flight was added successfully
 	 */
 	public boolean addFlight(User user, Flight flight){
-		if (!user.isAdmin()) return false;
+		if (!user.isAdmin()) {
+			System.out.println("User is not admin");
+			return false;
+		}
 		// check if the flight time is a future value
+		
 		LocalDateTime now = LocalDateTime.now();
-		Date date = flight.getDate();
-		if (date.getYear() < now.getYear()) return false;
-		if (date.getYear() == now.getYear()){
-			if (date.getMonth() < now.getMonthValue()) return false;
-			if (date.getMonth() == now.getMonthValue()){
-				if (date.getDay() < now.getDayOfMonth()) return false;
-				if (date.getDay() == now.getDayOfMonth()){
-					if (flight.getDepartureTime().getHours() < now.getHour()) return false;
-					if (flight.getDepartureTime().getHours() == now.getHour()){
-						if (flight.getDepartureTime().getMinutes() < now.getMinute()) return false;
-					}
-				}
+		Date currentDate = new Date(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+		System.out.println("Comparing now: " + currentDate.toString() + " to flight time: " + flight.getDate().toString());
+		TimeStamp currentTime = new TimeStamp(now.getHour(), now.getMinute());
+		if (currentDate.compareTo(flight.getDate()) > 0) {
+			System.out.println("Date invlaid");
+			return false;
+		}
+		if (currentDate.compareTo(flight.getDate()) == 0){
+			if (currentTime.compareTo(flight.getDepartureTime()) > 0) {
+				System.out.println("Date invlaid");
+				return false;
 			}
 		}
+		System.out.println("Current date is: " + currentDate.toString());
 		
 		try{
 			String query = "INSERT flights VALUES(?,?,?,?,?,?,?,?,?)";
@@ -509,7 +491,7 @@ public class Database {
 	}
 	
 	/**
-	 * Testing purposes only
+	 * Testing purposes only, DO NOT RUN 
 	 * @param args
 	 */
 	public static void main(String [] args){

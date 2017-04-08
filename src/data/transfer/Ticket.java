@@ -79,17 +79,22 @@ public class Ticket implements Serializable{
 					temp = "";
 					break;
 				}
-				case 7:{	// First name
+				case 7:{	// username
+					user.setUsername(new String(temp));
+					temp = "";
+					break;
+				}
+				case 8:{	// First name
 					user.setFirstName(new String(temp));
 					temp = "";
 					break;
 				}
-				case 8:{	// Last name
+				case 9:{	// Last name
 					user.setLastName(new String(temp));
 					temp = "";
 					break;
 				}
-				case 9:{	// Birthday
+				case 10:{	// Birthday
 					user.setBirthday(new Date(temp));
 					temp = "";
 					break;
@@ -102,7 +107,33 @@ public class Ticket implements Serializable{
 		setPrice(Double.parseDouble(temp));
 	}
 	
+	/**
+	 *  For displaying purposes only
+	 */
 	public String toString(){
+		String res = "";
+		res += id;
+		res += "|  ";
+		res += source;
+		res += " to ";
+		res += destination;
+		res += " | ";
+		res += date.toString();
+		res += " | ";
+		res += departureTime.toString();
+		res += " | ";
+		res += duration.toString();
+		
+		res += " | ";
+		res += user.getFirstName();
+		res += " ";
+		res += user.getLastName();
+		
+		return res;
+	}
+	
+	/** Write all field to a string */
+	public String writeString(){
 		String res = "Id: ";
 		res += id;
 		res += "\nSource: ";
@@ -115,12 +146,10 @@ public class Ticket implements Serializable{
 		res += departureTime.toString();
 		res += "\nDuration: ";
 		res += duration.toString();
-		
 		res += "\nName: ";
 		res += user.getFirstName();
 		res += " ";
 		res += user.getLastName();
-		
 		return res;
 	}
 	

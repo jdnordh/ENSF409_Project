@@ -79,7 +79,7 @@ public class AdminInterface extends JFrame{
 	public AdminInterface(User u, ObjectOutputStream o) {
 		out = o;
 		user = u;
-		this.setTitle(user.getUsername() + ": Administration Mode");
+		this.setTitle(user.getFirstName() + ": Administration Mode");
 		this.setBounds(325, 225, 300, 160);
 		this.setLayout(new GridLayout(4, 1));
 		
@@ -87,6 +87,13 @@ public class AdminInterface extends JFrame{
 		mainMenu2 = new JButton("Return to Main Menu");
 		mainMenu3 = new JButton("Return to Main Menu");
 		mainMenu4 = new JButton("Return to Main Menu");
+		
+		
+		flightModel = new DefaultListModel<Flight>();
+		flightList = new JList<Flight>(flightModel);
+		
+		ticketModel = new DefaultListModel<Ticket>();
+		ticketList = new JList<Ticket>(ticketModel);
 		
 		addFlightButton = new JButton("");
 		browse = new JButton("");
@@ -405,7 +412,7 @@ public class AdminInterface extends JFrame{
 			}
 			else if (e.getSource() == cancelFlightsButton) {
 				start.setVisible(false);
-				flightModel.clear();
+				flightModel.removeAllElements();
 				flightBrowseWindow.setVisible(true);
 				ClientRequestCom req = new ClientRequestCom(ComTypes.QUERY);
 				req.setQuery(ClientRequestCom.ALL_FLIGHTS);
@@ -453,22 +460,20 @@ public class AdminInterface extends JFrame{
 					in = new BufferedReader(new FileReader(file));
 					while ((input = in.readLine()) != null){
 						Flight temp = new Flight(input);
-						LocalDateTime now = LocalDateTime.now();
-						Date date = temp.getDate();
 						try {
-						if (date.getYear() < now.getYear()) throw new ClassNotFoundException();
-						if (date.getYear() == now.getYear()){
-							if (date.getMonth() < now.getMonthValue()) throw new ClassNotFoundException();
-							if (date.getMonth() == now.getMonthValue()){
-								if (date.getDay() < now.getDayOfMonth()) throw new ClassNotFoundException();
-								if (date.getDay() == now.getDayOfMonth()){
-									if (temp.getDepartureTime().getHours() < now.getHour()) throw new ClassNotFoundException();
-									if (temp.getDepartureTime().getHours() == now.getHour()){
-										if (temp.getDepartureTime().getMinutes() < now.getMinute()) throw new ClassNotFoundException();
-									}
+							LocalDateTime now = LocalDateTime.now();
+							Date currentDate = new Date(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+							TimeStamp currentTime = new TimeStamp(now.getHour(), now.getMinute());
+							if (currentDate.compareTo(temp.getDate()) > 0) {
+								System.out.println("Date invlaid");
+								throw new ClassNotFoundException();
+							}
+							if (currentDate.compareTo(temp.getDate()) == 0){
+								if (currentTime.compareTo(temp.getDepartureTime()) > 0) {
+									System.out.println("Date invlaid");
+									throw new ClassNotFoundException();
 								}
 							}
-						}
 						flights.add(temp);
 						} catch (ClassNotFoundException e1){
 							dates++;
@@ -544,80 +549,30 @@ public class AdminInterface extends JFrame{
 					else {
 						// error checking done
 						ClientRequestCom req = new ClientRequestCom(ComTypes.ADD_MULTIPLE_FLIGHTS);
-						Flight f = new Flight();
 						Vector<Flight> flights = new Vector<Flight>();
-						
-						f.setId(Integer.parseInt(flightNumField.getText()));
-						f.setSource(departureField.getText());
-						f.setDestination(destField.getText());
-						int minutes = 0, hours = 0;
-						String t = new String(depTime.getText());
-						try {
-							boolean min = false;
-							String temp = "";
-							for (int i = 0; i < t.length(); i++){
-								if (min){
-									temp += t.charAt(i);
-								}
-								else {
-									if (t.charAt(i) == ':'){
-										min = true;
-										hours = Integer.parseInt(temp);
-										hours = hours % 24;
-										temp = "";
-									}
-									else {
-										temp += t.charAt(i);
-									}
-								}
-							}
-							minutes = Integer.parseInt(temp);
-							minutes = minutes % 60;
-							if (!min) {
-								hours = minutes = 0;
-							}
-						} catch (Exception e1){
-							JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
-							return;
-						}
-						
-						f.setDepartureTime(new TimeStamp(minutes, hours));
-						t = new String(durationField.getText());
-						try {
-							boolean min = false;
-							String temp = "";
-							for (int i = 0; i < t.length(); i++){
-								if (min){
-									temp += t.charAt(i);
-								}
-								else {
-									if (t.charAt(i) == ':'){
-										min = true;
-										hours = Integer.parseInt(temp);
-										hours = hours % 24;
-										temp = "";
-									}
-									else {
-										temp += t.charAt(i);
-									}
-								}
-							}
-							minutes = Integer.parseInt(temp);
-							minutes = minutes % 60;
-							if (!min) {
-								hours = minutes = 0;
-							}
-						} catch (Exception e1){
-							JOptionPane.showMessageDialog(null, "Error: " + e1.getMessage());
-							return;
-						}
-						f.setDuration(new TimeStamp(minutes, hours));
-						f.setTotalSeats(Integer.parseInt(totSeatsField.getText()));
-						f.setavailableSeats(Integer.parseInt(totSeatsField.getText()));
-						f.setPrice(Double.parseDouble(priceField.getText()));
-						flights.add(f);
-						req.setMultiple_flights(flights);
-						req.setUser(user);
+						String temp = "";
+						temp += flightNumField.getText();
+						temp += ",";
+						temp += departureField.getText();
+						temp += ",";
+						temp += destField.getText();
+						temp += ",";
+						temp += depTime.getText();
+						temp += ",";
+						temp += durationField.getText();
+						temp += ",";
+						temp += depDate.getText();
+						temp += ",";
+						temp += totSeatsField.getText();
+						temp += ",";
+						temp += totSeatsField.getText();
+						temp += ",";
+						temp += priceField.getText();
+						Flight a = new Flight(temp);
+						System.out.println(temp);
+						flights.add(a);
+						flights.add(a);
+						System.out.println(flights.size() + " | " + flights.get(0).toString());
 						try {
 							out.writeObject(req);
 							out.flush();

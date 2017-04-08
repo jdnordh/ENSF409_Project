@@ -30,5 +30,8 @@ public interface ComTypes {
 	public static final int FAILED_LOGIN = 52;
 	public static final int FAILED_REGISTER = 53;
 	public static final int FAILED = 54;
-	
+	public static final int FLIGHT_ADD_FAIL = 60;
+	public static final int TICKET_DELETE_FAIL = 61;
+	public static final int FLIGHT_DELETE_FAIL = 62;
+	public static final int BOOK_FAILED = 64;
 }

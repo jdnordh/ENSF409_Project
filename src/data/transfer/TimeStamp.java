@@ -8,12 +8,16 @@ import java.text.DecimalFormat;
  * @author Jordan Nordh
  *
  */
-public class TimeStamp implements Serializable{
+public class TimeStamp implements Serializable, Comparable<TimeStamp>{
 	private static final long serialVersionUID = 1L;
 	private int hours;
 	private int minutes;
 	
-	/** Construct a new time stamp */
+	/**
+	 * Construct a new time stamp
+	 * @param h Hour
+	 * @param m Minute
+	 */
 	public TimeStamp(int h, int m){
 		hours = h;
 		minutes = m;
@@ -81,5 +85,13 @@ public class TimeStamp implements Serializable{
 	}
 	public void setHours(int hours) {
 		this.hours = hours;
+	}
+
+	@Override
+	public int compareTo(TimeStamp o) {
+		// TODO Auto-generated method stub
+		if (hours != o.getHours()) return hours - o.getHours();
+		else if (minutes != o.getMinutes()) return minutes - o.getMinutes();
+		return 0;
 	}
 }
